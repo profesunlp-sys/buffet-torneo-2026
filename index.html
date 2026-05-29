@@ -2,8 +2,10 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consolidador Buffet – Torneo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Buffet – Torneo Gimnasia Artística</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#8b5cf6">
     <style>
         :root {
             --bg: #f4f6fb;
@@ -12,130 +14,416 @@
             --subtext: #64748b;
             --primary: #8b5cf6;
             --border: #e2e8f0;
+            --stat-bg: #f8fafc;
             --success: #10b981;
             --danger: #ef4444;
-            --shadow: 0 8px 30px rgba(0,0,0,0.06);
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+            --btn-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            --radius-card: 28px;
+            --radius-btn: 20px;
+            --radius-modal: 24px;
+            --efectivo: #10b981;
+            --efectivo-dark: #059669;
+            --transferencia: #3b82f6;
+            --transferencia-dark: #2563eb;
         }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; }
-        .container { max-width: 900px; width: 100%; background: var(--card); border-radius: 24px; padding: 30px; box-shadow: var(--shadow); }
-        h1 { color: var(--primary); margin: 0 0 8px; }
-        .drop-zone { border: 2px dashed var(--primary); border-radius: 16px; padding: 40px 20px; text-align: center; margin-bottom: 24px; background: #f8fafc; }
-        .drop-zone.dragover { background: #ede9fe; }
-        .btn-select { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; display: inline-block; }
-        .file-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--bg); border-radius: 10px; margin-bottom: 8px; font-size: 14px; flex-wrap: wrap; }
-        .btn-remove { background: var(--danger); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-weight: bold; }
-        .summary-preview table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .summary-preview th { background: var(--primary); color: white; padding: 8px; text-align: left; }
-        .summary-preview td { padding: 8px; border-bottom: 1px solid var(--border); }
-        .btn-generate { width: 100%; background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; border: none; border-radius: 16px; padding: 16px; font-weight: 800; font-size: 16px; cursor: pointer; margin-top: 20px; }
-        .btn-generate:active { transform: scale(0.97); }
-        .btn-generate:disabled { opacity: 0.5; pointer-events: none; }
+        .dark-mode {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f1f5f9;
+            --subtext: #94a3b8;
+            --primary: #a78bfa;
+            --border: #334155;
+            --stat-bg: #1e293b;
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            --btn-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            transition: background 0.3s, color 0.3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 540px;
+            background: var(--card);
+            border-radius: var(--radius-card);
+            padding: 24px 20px 20px;
+            box-shadow: var(--shadow);
+            transition: background 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        .logo { font-weight: 800; font-size: 1.3rem; color: var(--primary); letter-spacing: -0.5px; display: flex; align-items: center; gap: 6px; }
+        .clock { font-size: 1.2rem; font-weight: 700; background: var(--stat-bg); padding: 6px 16px; border-radius: 30px; border: 1px solid var(--border); }
+        .icon-btn { background: var(--stat-bg); border: 1px solid var(--border); border-radius: 50%; width: 40px; height: 40px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text); transition: transform 0.2s, background 0.2s; user-select: none; }
+        .icon-btn:active { transform: scale(0.92); }
+
+        .cobrador-box { background: linear-gradient(135deg, #ede9fe, #ddd6fe); border: 2px solid var(--primary); border-radius: 18px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; transition: background 0.3s; }
+        .dark-mode .cobrador-box { background: linear-gradient(135deg, #2e1065, #3b0764); }
+        .cobrador-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--primary); }
+        .cobrador-nombre { font-size: 20px; font-weight: 800; color: #4c1d95; }
+        .dark-mode .cobrador-nombre { color: #e9d5ff; }
+        .btn-cambiar-cobrador { background: var(--primary); color: white; border: none; border-radius: 14px; padding: 10px 16px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; transition: transform 0.15s, opacity 0.2s; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4); }
+        .btn-cambiar-cobrador:active { transform: scale(0.94); }
+
+        .buttons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .entry-btn { border: none; border-radius: var(--radius-btn); padding: 30px 12px; color: white; font-weight: 700; font-size: 18px; cursor: pointer; box-shadow: var(--btn-shadow); transition: all 0.15s ease; display: flex; flex-direction: column; align-items: center; gap: 8px; user-select: none; }
+        .entry-btn:active { transform: scale(0.94); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); }
+        .cash-btn { background: linear-gradient(135deg, var(--efectivo), var(--efectivo-dark)); }
+        .transfer-btn { background: linear-gradient(135deg, var(--transferencia), var(--transferencia-dark)); }
+        .entry-btn .icono { font-size: 36px; }
+        .entry-btn .texto { font-size: 15px; opacity: 0.95; }
+
+        .last-entry { text-align: center; font-size: 13px; color: var(--subtext); font-weight: 500; min-height: 20px; padding: 4px 0; }
+
+        .stats-card { background: var(--stat-bg); border: 1px solid var(--border); border-radius: 20px; padding: 16px; }
+        .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 15px; }
+        .stat-row:last-child { border-bottom: none; }
+        .total-row { font-size: 20px; font-weight: 800; color: var(--success); border-top: 2px solid var(--border); padding-top: 12px; margin-top: 6px; }
+        .stat-value { font-weight: 700; }
+
+        .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn { border: none; border-radius: 14px; padding: 12px 18px; font-weight: 700; font-size: 14px; cursor: pointer; color: white; transition: opacity 0.2s, transform 0.15s; flex: 1; text-align: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+        .btn:active { transform: scale(0.96); }
+        .btn-historial { background: #64748b; }
+        .btn-exportar { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
+        .modal.active { display: flex; }
+        .modal-content { background: var(--card); border-radius: var(--radius-modal); padding: 24px; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; color: var(--text); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); }
+        .modal-content h3 { margin-bottom: 16px; color: var(--primary); font-size: 20px; display: flex; align-items: center; gap: 8px; }
+        .modal-content input, .modal-content textarea { width: 100%; padding: 10px; border-radius: 10px; border: 2px solid var(--border); font-size: 16px; margin-bottom: 12px; background: var(--bg); color: var(--text); font-family: inherit; }
+        .modal-content textarea { resize: vertical; min-height: 60px; }
+        .modal-buttons { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+        .btn-cancel { background: #94a3b8; color: white; border: none; border-radius: 10px; padding: 12px 20px; cursor: pointer; font-weight: 600; font-size: 15px; width: 100%; margin-top: 4px; }
+        .btn-confirm { background: var(--success); color: white; border: none; border-radius: 10px; padding: 14px 20px; cursor: pointer; font-weight: 700; font-size: 16px; width: 100%; margin-top: 8px; transition: opacity 0.2s; }
+        .btn-confirm:disabled { opacity: 0.4; pointer-events: none; }
+        .btn-danger { background: var(--danger); color: white; border: none; border-radius: 10px; padding: 10px 18px; cursor: pointer; font-weight: 600; font-size: 14px; }
+        .btn-small { background: var(--warning); color: #1e293b; border: none; border-radius: 8px; padding: 6px 12px; cursor: pointer; font-weight: 700; font-size: 12px; }
+
+        /* CALCULADORA */
+        .calc-display { background: var(--stat-bg); border: 2px solid var(--border); border-radius: 16px; padding: 16px; font-size: 28px; font-weight: 700; text-align: right; min-height: 70px; word-break: break-all; margin-bottom: 12px; color: var(--text); letter-spacing: 1px; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
+        .calc-btn { background: var(--stat-bg); border: 2px solid var(--border); border-radius: 16px; padding: 18px 8px; font-size: 20px; font-weight: 700; cursor: pointer; color: var(--text); transition: all 0.15s; user-select: none; text-align: center; }
+        .calc-btn:active { transform: scale(0.92); background: var(--border); }
+        .calc-btn.operador { background: var(--primary); color: white; border-color: var(--primary); font-size: 30px; padding: 14px 8px; }
+        .calc-btn.igual { background: var(--success); color: white; border-color: var(--success); }
+        .calc-btn.borrar { background: var(--danger); color: white; border-color: var(--danger); }
+        .calc-btn.backspace { background: var(--warning); color: #1e293b; border-color: var(--warning); font-size: 24px; }
+
+        /* LISTA DE MOVIMIENTOS EN HISTORIAL */
+        .movimiento-item { background: var(--stat-bg); border: 1px solid var(--border); border-radius: 14px; padding: 12px; margin-bottom: 8px; font-size: 13px; display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; }
+        .movimiento-item.error { opacity: 0.6; text-decoration: line-through; border-color: var(--danger); background: #fef2f2; }
+        .dark-mode .movimiento-item.error { background: #3b1010; }
+        .movimiento-info { display: flex; flex-direction: column; gap: 2px; }
+        .movimiento-monto { font-weight: 800; font-size: 16px; }
+        .movimiento-tipo { font-weight: 600; padding: 2px 10px; border-radius: 20px; font-size: 11px; display: inline-block; width: fit-content; }
+        .tipo-efectivo { background: #d1fae5; color: #065f46; }
+        .tipo-transferencia { background: #dbeafe; color: #1e40af; }
+        .movimiento-meta { color: var(--subtext); font-size: 11px; }
+        .error-badge { background: var(--danger); color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 700; white-space: nowrap; }
+
+        .pulse { animation: pulse 0.4s ease; }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.06); color: var(--success); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>🍰 Consolidador Buffet</h1>
-    <p>Arrastrá los archivos <strong>.xls</strong> generados por cada puesto de buffet</p>
-    <div class="drop-zone" id="dropZone">
-        <p>Soltá los archivos aquí o</p>
-        <label class="btn-select">Seleccionar archivos<input type="file" id="fileInput" multiple accept=".xls,.xlsx" style="display:none;"></label>
+<div class="app-container">
+    <div class="header">
+        <span class="logo">🍰 Buffet Torneo</span>
+        <span class="clock" id="live-clock">--:--:--</span>
+        <div style="display:flex; gap:6px;">
+            <button class="icon-btn" onclick="toggleDark()" title="Modo oscuro">🌓</button>
+            <button class="icon-btn" onclick="showHelp()" title="Ayuda">❓</button>
+        </div>
     </div>
-    <div id="fileList"></div>
-    <div id="summaryPreview" class="summary-preview"></div>
-    <button class="btn-generate" id="btnGenerate" disabled onclick="generarConsolidado()">📥 Generar Reporte Consolidado</button>
-    <div id="errorMsg" style="color:var(--danger); margin-top:8px;"></div>
+
+    <div class="cobrador-box">
+        <div>
+            <div class="cobrador-label">👤 Cobrador de turno</div>
+            <div class="cobrador-nombre" id="cobrador-actual-nombre">—</div>
+        </div>
+        <button class="btn-cambiar-cobrador" onclick="abrirCambioCobrador()">🔄 Cambiar</button>
+    </div>
+
+    <div class="last-entry" id="last-entry-text">Último registro: —</div>
+
+    <div class="buttons-grid">
+        <button class="entry-btn cash-btn" onclick="abrirRegistro('efectivo')">
+            <span class="icono">💵</span><span>Efectivo</span><span class="texto">Calculadora + venta</span>
+        </button>
+        <button class="entry-btn transfer-btn" onclick="abrirRegistro('transferencia')">
+            <span class="icono">📱</span><span>Transferencia</span><span class="texto">Calculadora + venta</span>
+        </button>
+    </div>
+
+    <div class="stats-card">
+        <div class="stat-row"><span>💵 Efectivo</span><span class="stat-value" id="total-efectivo">$0</span></div>
+        <div class="stat-row"><span>📱 Transferencia</span><span class="stat-value" id="total-transferencia">$0</span></div>
+        <div class="stat-row" style="font-weight:800;"><span>🧾 Operaciones</span><span class="stat-value" id="cantidad-operaciones">0</span></div>
+        <div class="stat-row total-row"><span>💰 TOTAL</span><span class="stat-value" id="total-general">$0</span></div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="btn btn-historial" onclick="abrirHistorial()">📋 Historial</button>
+        <button class="btn btn-exportar" onclick="abrirExportar()">📥 Cierre de caja</button>
+    </div>
 </div>
+
+<!-- MODAL REGISTRO -->
+<div class="modal" id="modal-registro">
+    <div class="modal-content">
+        <h3 id="modal-registro-titulo">💵 Calculadora - Efectivo</h3>
+        <div class="calc-display" id="calc-display">0</div>
+        <div class="calc-grid">
+            <button class="calc-btn" onclick="agregarACalc('7')">7</button><button class="calc-btn" onclick="agregarACalc('8')">8</button><button class="calc-btn" onclick="agregarACalc('9')">9</button><button class="calc-btn backspace" onclick="borrarUltimo()">⌫</button>
+            <button class="calc-btn" onclick="agregarACalc('4')">4</button><button class="calc-btn" onclick="agregarACalc('5')">5</button><button class="calc-btn" onclick="agregarACalc('6')">6</button><button class="calc-btn operador" onclick="agregarACalc('+')">+</button>
+            <button class="calc-btn" onclick="agregarACalc('1')">1</button><button class="calc-btn" onclick="agregarACalc('2')">2</button><button class="calc-btn" onclick="agregarACalc('3')">3</button><button class="calc-btn operador" onclick="agregarACalc('-')">−</button>
+            <button class="calc-btn" onclick="agregarACalc('0')">0</button><button class="calc-btn" onclick="agregarACalc('.')">.</button><button class="calc-btn borrar" onclick="limpiarCalc()">C</button><button class="calc-btn operador" onclick="agregarACalc('*')">×</button>
+            <button class="calc-btn igual" onclick="calcularResultado()" style="grid-column: span 2;">=</button>
+            <button class="calc-btn operador" onclick="agregarACalc('/')" style="grid-column: span 2;">÷</button>
+        </div>
+        <label style="font-weight:600;font-size:14px;">📝 Descripción <span style="color:var(--subtext);font-weight:400;">(opcional)</span></label>
+        <input type="text" id="input-descripcion" placeholder="Ej: 2 tortas, 1 gaseosa">
+        <button id="btn-registrar-venta" class="btn-confirm" disabled onclick="registrarDesdeCalc()">✅ Registrar venta</button>
+        <button class="btn-cancel" onclick="cerrarModalRegistro()">Cancelar</button>
+    </div>
+</div>
+
+<!-- MODAL CAMBIAR COBRADOR -->
+<div class="modal" id="modal-cobrador">
+    <div class="modal-content">
+        <h3>🔄 Cambiar cobrador</h3>
+        <input type="text" id="input-nuevo-cobrador" placeholder="Nombre del nuevo cobrador">
+        <div class="modal-buttons">
+            <button class="btn-cancel" onclick="cerrarModalCobrador()">Cancelar</button>
+            <button class="btn-confirm" onclick="confirmarCambioCobrador()">✅ Cambiar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL HISTORIAL -->
+<div class="modal" id="modal-historial">
+    <div class="modal-content" style="max-height:85vh;">
+        <h3>📋 Historial de movimientos</h3>
+        <div id="historial-lista" style="max-height:55vh;overflow-y:auto;padding-right:4px;"></div>
+        <button class="btn-cancel" onclick="cerrarModalHistorial()">Cerrar</button>
+    </div>
+</div>
+
+<!-- MODAL EXPORTAR -->
+<div class="modal" id="modal-exportar">
+    <div class="modal-content">
+        <h3>📥 Cierre de caja – Resumen</h3>
+        <textarea id="texto-exportar" rows="14" readonly style="font-family:monospace;font-size:13px;background:var(--stat-bg);color:var(--text);"></textarea>
+        <div class="modal-buttons" style="margin-bottom:12px;">
+            <button class="btn-cancel" onclick="cerrarModalExportar()">Cerrar</button>
+            <button class="btn-confirm" onclick="copiarAlPortapapeles()">📋 Copiar</button>
+        </div>
+        <button class="btn-confirm" onclick="descargarExcel()" style="background: linear-gradient(135deg, #f59e0b, #d97706); margin-bottom:12px;">📥 Descargar Excel</button>
+        <div style="margin-top:12px;">
+            <label style="font-weight:600;font-size:14px;">📲 WhatsApp destino (ej: 5491161234567)</label>
+            <input type="text" id="whatsapp-destino" placeholder="Número sin + ni espacios">
+            <button id="btn-whatsapp" class="btn-confirm" onclick="enviarPorWhatsApp()" style="background: #25D366;">💬 Enviar por WhatsApp</button>
+            <p style="font-size:11px;color:var(--subtext);" id="estado-conexion"></p>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL AYUDA -->
+<div class="modal" id="modal-ayuda">
+    <div class="modal-content">
+        <h3>📘 ¿Cómo usar el Buffet?</h3>
+        <ol style="padding-left:20px;line-height:1.8;">
+            <li><strong>Cobrador de turno:</strong> tocá "Cambiar" para poner quién atiende.</li>
+            <li><strong>Registrar venta:</strong> usá la calculadora o tipeá el monto directo. La descripción es opcional.</li>
+            <li><strong>Historial:</strong> revisá todos los movimientos. Si algo fue error, marcalo con "Marcar error".</li>
+            <li><strong>Cierre de caja:</strong> generá el resumen, descargá el Excel o enviá por WhatsApp.</li>
+        </ol>
+        <button class="btn-confirm" style="width:100%;margin-top:12px;" onclick="cerrarModalAyuda()">Entendido</button>
+    </div>
+</div>
+
+<!-- MODAL MARCAR ERROR -->
+<div class="modal" id="modal-error">
+    <div class="modal-content">
+        <h3>⚠️ Marcar como error</h3>
+        <p id="error-movimiento-info"></p>
+        <input type="text" id="input-nota-error" placeholder="Nota aclaratoria (opcional)">
+        <div class="modal-buttons">
+            <button class="btn-cancel" onclick="cerrarModalError()">Cancelar</button>
+            <button class="btn-danger" onclick="confirmarMarcarError()">Marcar error</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    let loadedData = [];
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('fileInput');
-    const fileListDiv = document.getElementById('fileList');
-    const btnGenerate = document.getElementById('btnGenerate');
+(function() {
+    const STORAGE_KEY = 'buffetTorneoData_v2';
+    let data = { cobradorActual: '', historialCobradores: [], movimientos: [] };
+    let idCounter = 0;
+    let tipoRegistroPendiente = null;
+    let movimientoAError = null;
+    let calcExpression = '';
+    let calcResult = null;
 
-    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
-    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-    dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
-    fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+    function cargarData() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            try {
+                data = JSON.parse(stored);
+                if (!data.historialCobradores) data.historialCobradores = [];
+                if (!data.movimientos) data.movimientos = [];
+                data.movimientos.forEach(m => { if (m.error === undefined) m.error = false; if (!m.notaError) m.notaError = ''; });
+                if (data.movimientos.length > 0) idCounter = Math.max(...data.movimientos.map(m => m.id || 0));
+            } catch (e) { data = { cobradorActual: '', historialCobradores: [], movimientos: [] }; }
+        }
+        if (!data.cobradorActual) { data.cobradorActual = 'Equipo Buffet'; data.historialCobradores.push({ nombre: 'Equipo Buffet', timestamp: new Date().toISOString() }); }
+        guardarData();
+    }
+    function guardarData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
 
-    function handleFiles(files) {
-        loadedData = []; fileListDiv.innerHTML = ''; btnGenerate.disabled = true;
-        Array.from(files).forEach(file => {
-            if (!file.name.endsWith('.xls') && !file.name.endsWith('.xlsx')) return;
-            const reader = new FileReader();
-            reader.onload = e => {
-                const data = extraerDatos(e.target.result, file.name);
-                if (data) loadedData.push(data);
-                actualizarLista();
-            };
-            reader.readAsText(file);
-        });
+    function updateClock() { document.getElementById('live-clock').textContent = new Date().toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit', second:'2-digit' }); }
+    setInterval(updateClock, 1000); updateClock();
+
+    function toggleDark() { document.body.classList.toggle('dark-mode'); localStorage.setItem('darkModeBuffet', document.body.classList.contains('dark-mode')); }
+    window.toggleDark = toggleDark;
+    if (localStorage.getItem('darkModeBuffet') === 'true') document.body.classList.add('dark-mode');
+
+    function actualizarUI() {
+        document.getElementById('cobrador-actual-nombre').textContent = data.cobradorActual || '—';
+        let totalEf = 0, totalTr = 0, ops = 0;
+        data.movimientos.forEach(m => { if (!m.error) { if (m.tipo === 'efectivo') totalEf += m.monto; else totalTr += m.monto; ops++; } });
+        document.getElementById('total-efectivo').textContent = '$' + totalEf.toLocaleString('es-AR');
+        document.getElementById('total-transferencia').textContent = '$' + totalTr.toLocaleString('es-AR');
+        document.getElementById('cantidad-operaciones').textContent = ops;
+        document.getElementById('total-general').textContent = '$' + (totalEf + totalTr).toLocaleString('es-AR');
+        const ultimo = data.movimientos.length > 0 ? data.movimientos[data.movimientos.length-1] : null;
+        if (ultimo) {
+            const tipoStr = ultimo.tipo === 'efectivo' ? '💵 Efectivo' : '📱 Transferencia';
+            const fecha = new Date(ultimo.timestamp).toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+            document.getElementById('last-entry-text').textContent = `Último: ${tipoStr} $${ultimo.monto.toLocaleString('es-AR')} · ${fecha} · ${ultimo.cobrador}${ultimo.error ? ' ⚠️ ANULADO' : ''}`;
+        } else { document.getElementById('last-entry-text').textContent = 'Último registro: —'; }
+        guardarData();
     }
 
-    function extraerDatos(html, fileName) {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const summary = doc.querySelector('.summary-table');
-        const detail = doc.querySelector('.detail-table');
-        if (!summary || !detail) return null;
-
-        const rows = summary.querySelectorAll('tr');
-        let efectivo = 0, transferencia = 0, operaciones = 0, total = 0;
-        rows.forEach(row => {
-            const cells = row.querySelectorAll('td');
-            if (cells.length >= 2) {
-                const concepto = cells[0].textContent.trim();
-                const monto = parseInt(cells[1].textContent.replace(/[^0-9]/g, '')) || 0;
-                if (concepto.includes('Efectivo')) efectivo = monto;
-                else if (concepto.includes('Transferencia')) transferencia = monto;
-                else if (concepto.includes('Operaciones')) operaciones = parseInt(cells[1].textContent) || 0;
-                else if (concepto.includes('TOTAL')) total = monto;
-            }
-        });
-
-        const detailRows = detail.querySelectorAll('tr');
-        let detalles = [];
-        detailRows.forEach(row => {
-            const cells = row.querySelectorAll('td');
-            if (cells.length < 7) return;
-            const id = cells[0].textContent.trim(); if (!id) return;
-            detalles.push({
-                id: id,
-                tipo: cells[1].textContent.trim(),
-                hora: cells[2].textContent.trim(),
-                monto: parseInt(cells[3].textContent.replace(/[^0-9]/g, '')) || 0,
-                descripcion: cells[4].textContent.trim(),
-                cobrador: cells[5].textContent.trim(),
-                estado: cells[6].textContent.trim()
-            });
-        });
-
-        return { fileName, efectivo, transferencia, operaciones, total, detalles };
+    function abrirRegistro(tipo) {
+        tipoRegistroPendiente = tipo;
+        document.getElementById('modal-registro-titulo').textContent = tipo === 'efectivo' ? '💵 Calculadora - Efectivo' : '📱 Calculadora - Transferencia';
+        const btnRegistrar = document.getElementById('btn-registrar-venta');
+        btnRegistrar.style.background = tipo === 'efectivo' ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #3b82f6, #2563eb)';
+        limpiarCalc(); document.getElementById('input-descripcion').value = ''; document.getElementById('modal-registro').classList.add('active');
+    }
+    function cerrarModalRegistro() { document.getElementById('modal-registro').classList.remove('active'); tipoRegistroPendiente = null; limpiarCalc(); }
+    function actualizarDisplay() {
+        const display = document.getElementById('calc-display'); const btnRegistrar = document.getElementById('btn-registrar-venta');
+        if (calcExpression === '' && calcResult === null) { display.textContent = '0'; btnRegistrar.disabled = true; }
+        else if (calcResult !== null) { display.textContent = calcResult.toLocaleString('es-AR'); btnRegistrar.disabled = calcResult <= 0; }
+        else { display.textContent = calcExpression || '0'; const ultimo = calcExpression.slice(-1); btnRegistrar.disabled = ['+','-','×','÷','*','/'].includes(ultimo) || calcExpression === ''; }
+    }
+    function agregarACalc(valor) { if (calcResult !== null && !isNaN(valor)) { calcExpression = valor; calcResult = null; } else if (calcResult !== null && isNaN(valor)) { calcExpression = calcResult.toString() + valor; calcResult = null; } else { calcExpression += valor; } actualizarDisplay(); }
+    function borrarUltimo() { if (calcResult !== null) { calcExpression = calcResult.toString(); calcResult = null; } calcExpression = calcExpression.slice(0, -1); actualizarDisplay(); }
+    function limpiarCalc() { calcExpression = ''; calcResult = null; actualizarDisplay(); }
+    function calcularResultado() {
+        if (!calcExpression && calcResult === null) return; let expr = calcExpression; if (expr === '' && calcResult !== null) return;
+        try { expr = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-'); if (!/^[0-9+\-*/.() ]+$/.test(expr)) throw new Error('inválido');
+            const resultado = Function('"use strict"; return (' + expr + ')')(); if (isNaN(resultado) || !isFinite(resultado)) throw new Error('inválido');
+            calcResult = Math.round(resultado * 100) / 100; calcExpression = ''; actualizarDisplay(); }
+        catch (e) { document.getElementById('calc-display').textContent = 'Error'; calcExpression = ''; calcResult = null; document.getElementById('btn-registrar-venta').disabled = true; }
+    }
+    function obtenerMontoActual() { if (calcResult !== null) return calcResult; const expr = calcExpression.trim(); if (expr === '') return null; if (/^[0-9.]+$/.test(expr)) { const num = parseFloat(expr); return isNaN(num) ? null : num; } return null; }
+    function registrarDesdeCalc() {
+        const monto = obtenerMontoActual(); if (monto === null || monto <= 0) { alert('Ingresá un monto válido o presioná "=".'); return; }
+        const descripcion = document.getElementById('input-descripcion').value.trim();
+        idCounter++; data.movimientos.push({ id: idCounter, tipo: tipoRegistroPendiente, monto: monto, descripcion: descripcion || 'Venta sin detalle', cobrador: data.cobradorActual || 'Sin cobrador', timestamp: new Date().toISOString(), error: false, notaError: '' });
+        guardarData(); actualizarUI(); cerrarModalRegistro();
+        document.getElementById('total-general').classList.add('pulse'); setTimeout(() => document.getElementById('total-general').classList.remove('pulse'), 400);
+        if (navigator.vibrate) navigator.vibrate(40);
     }
 
-    function actualizarLista() {
-        fileListDiv.innerHTML = loadedData.map((d, i) => `<div class="file-item"><span>📄 ${d.fileName}</span><span>${d.detalles.length} ventas · $${d.total.toLocaleString()}</span><button class="btn-remove" onclick="eliminar(${i})">✕</button></div>`).join('');
-        const totalGral = loadedData.reduce((s,d) => s + d.total, 0);
-        document.getElementById('summaryPreview').innerHTML = loadedData.length ? `<table><tr><th>Archivo</th><th>Ventas</th><th>Total</th></tr>${loadedData.map(d => `<tr><td>${d.fileName}</td><td>${d.detalles.length}</td><td>$${d.total.toLocaleString()}</td></tr>`).join('')}<tr style="font-weight:bold;"><td colspan="2">TOTAL CONSOLIDADO</td><td>$${totalGral.toLocaleString()}</td></tr></table>` : '';
-        btnGenerate.disabled = loadedData.length === 0;
+    function abrirCambioCobrador() { document.getElementById('input-nuevo-cobrador').value = ''; document.getElementById('modal-cobrador').classList.add('active'); }
+    function cerrarModalCobrador() { document.getElementById('modal-cobrador').classList.remove('active'); }
+    function confirmarCambioCobrador() { const nombre = document.getElementById('input-nuevo-cobrador').value.trim(); if (!nombre) { alert('Ingresá un nombre.'); return; } data.cobradorActual = nombre; data.historialCobradores.push({ nombre, timestamp: new Date().toISOString() }); guardarData(); actualizarUI(); cerrarModalCobrador(); }
+
+    function abrirHistorial() {
+        const lista = document.getElementById('historial-lista'); if (data.movimientos.length === 0) { lista.innerHTML = '<p style="text-align:center;color:var(--subtext);">No hay movimientos.</p>'; }
+        else { let html = ''; [...data.movimientos].reverse().forEach(m => { const fecha = new Date(m.timestamp).toLocaleString('es-AR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' }); const tipoBadge = m.tipo === 'efectivo' ? '<span class="movimiento-tipo tipo-efectivo">💵 Efectivo</span>' : '<span class="movimiento-tipo tipo-transferencia">📱 Transferencia</span>'; html += `<div class="movimiento-item${m.error ? ' error' : ''}"><div>${tipoBadge}</div><div class="movimiento-info"><span class="movimiento-monto">$${m.monto.toLocaleString('es-AR')}</span><span style="font-size:12px;">${m.descripcion}</span><span class="movimiento-meta">${fecha} · 👤 ${m.cobrador}</span>${m.error ? `<span class="error-badge">⚠️ Error${m.notaError ? ': '+m.notaError : ''}</span>` : ''}${!m.error ? `<button class="btn-small" onclick="abrirMarcarError(${m.id})">Marcar error</button>` : ''}</div></div>`; }); if (data.historialCobradores.length > 1) { html += '<hr><h4>🔄 Cambios de cobrador</h4>'; [...data.historialCobradores].reverse().forEach(c => { const fecha = new Date(c.timestamp).toLocaleString('es-AR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit' }); html += `<div style="font-size:12px;padding:4px 0;">🕒 ${fecha} → <strong>${c.nombre}</strong></div>`; }); } lista.innerHTML = html; }
+        document.getElementById('modal-historial').classList.add('active');
     }
+    function cerrarModalHistorial() { document.getElementById('modal-historial').classList.remove('active'); }
+    function abrirMarcarError(id) { movimientoAError = id; const mov = data.movimientos.find(m => m.id === id); if (!mov) return; document.getElementById('error-movimiento-info').textContent = `$${mov.monto.toLocaleString('es-AR')} · ${mov.descripcion} · ${mov.tipo}`; document.getElementById('input-nota-error').value = ''; document.getElementById('modal-error').classList.add('active'); document.getElementById('modal-historial').classList.remove('active'); }
+    function cerrarModalError() { document.getElementById('modal-error').classList.remove('active'); movimientoAError = null; }
+    function confirmarMarcarError() { if (movimientoAError === null) return; const mov = data.movimientos.find(m => m.id === movimientoAError); if (mov && !mov.error) { mov.error = true; mov.notaError = document.getElementById('input-nota-error').value.trim(); guardarData(); actualizarUI(); } cerrarModalError(); abrirHistorial(); }
+    window.abrirMarcarError = abrirMarcarError;
 
-    function eliminar(i) { loadedData.splice(i,1); actualizarLista(); }
-    window.eliminar = eliminar;
+    function abrirExportar() {
+        let texto = '========================================\n   CIERRE DE CAJA – BUFFET TORNEO\n========================================\n\n';
+        texto += '👤 COBRADOR ACTUAL: ' + data.cobradorActual + '\n\n';
+        data.historialCobradores.forEach(c => { texto += `  ${new Date(c.timestamp).toLocaleString('es-AR')} → ${c.nombre}\n`; });
+        texto += '\n--- MOVIMIENTOS ---\n'; let totalEf = 0, totalTr = 0, ops = 0;
+        data.movimientos.forEach(m => { const fecha = new Date(m.timestamp).toLocaleString('es-AR'); const tipo = m.tipo === 'efectivo' ? 'EFECTIVO' : 'TRANSFER.'; const estado = m.error ? ' [ANULADO' + (m.notaError ? ': ' + m.notaError : '') + ']' : ''; texto += `  #${m.id} | ${fecha} | ${tipo} | $${m.monto.toLocaleString('es-AR')} | ${m.descripcion} | Cobrador: ${m.cobrador}${estado}\n`; if (!m.error) { if (m.tipo === 'efectivo') totalEf += m.monto; else totalTr += m.monto; ops++; } });
+        texto += '\n--- RESUMEN ---\n'; texto += `  Efectivo:      $${totalEf.toLocaleString('es-AR')}\n  Transferencia: $${totalTr.toLocaleString('es-AR')}\n  Operaciones:   ${ops}\n  TOTAL:         $${(totalEf + totalTr).toLocaleString('es-AR')}\n`;
+        document.getElementById('texto-exportar').value = texto;
+        document.getElementById('modal-exportar').classList.add('active');
+        cargarWhatsapp(); actualizarEstadoConexion();
+    }
+    function cerrarModalExportar() { document.getElementById('modal-exportar').classList.remove('active'); }
+    function copiarAlPortapapeles() { const texto = document.getElementById('texto-exportar').value; if (navigator.clipboard) { navigator.clipboard.writeText(texto).then(() => alert('✅ Copiado')); } else { const ta = document.getElementById('texto-exportar'); ta.select(); document.execCommand('copy'); alert('✅ Copiado'); } }
 
-    function generarConsolidado() {
-        const todosDetalles = loadedData.flatMap(d => d.detalles.map(det => ({ ...det, archivo: d.fileName })));
-        const totalEf = loadedData.reduce((s,d) => s + d.efectivo, 0);
-        const totalTr = loadedData.reduce((s,d) => s + d.transferencia, 0);
+    function descargarExcel() {
+        const totalEf = data.movimientos.filter(m => !m.error && m.tipo === 'efectivo').reduce((s, m) => s + m.monto, 0);
+        const totalTr = data.movimientos.filter(m => !m.error && m.tipo === 'transferencia').reduce((s, m) => s + m.monto, 0);
+        const ops = data.movimientos.filter(m => !m.error).length;
         const fecha = new Date().toLocaleDateString('es-AR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-        const html = '\uFEFF' + `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Consolidado Buffet</title><style>body { font-family: 'Segoe UI', Arial, sans-serif; margin: 30px; background: #f4f6fb; } .report-container { max-width: 1200px; margin: auto; background: white; border-radius: 24px; padding: 30px; } .header { margin-bottom: 24px; border-bottom: 3px solid #8b5cf6; padding-bottom: 16px; } .logo { font-size: 24px; font-weight: 800; color: #8b5cf6; } table { width: 100%; border-collapse: collapse; margin-bottom: 20px; } th { background: #8b5cf6; color: white; padding: 10px; text-align: left; } td { padding: 8px; border-bottom: 1px solid #e2e8f0; } .badge { padding: 3px 10px; border-radius: 20px; font-weight: bold; font-size: 11px; } .cash { background: #d1fae5; color: #065f46; } .transfer { background: #dbeafe; color: #1e40af; }</style></head><body><div class="report-container"><div class="header"><div class="logo">🍰 Buffet Torneo – Consolidado</div><div>${fecha} · ${loadedData.length} archivos</div></div>
-        <h2>📊 Resumen General</h2>
-        <table><tr><th>Concepto</th><th>Monto</th></tr><tr><td>💵 Efectivo</td><td>$${totalEf.toLocaleString()}</td></tr><tr><td>📱 Transferencia</td><td>$${totalTr.toLocaleString()}</td></tr><tr style="font-weight:bold;"><td>💰 TOTAL</td><td>$${(totalEf+totalTr).toLocaleString()}</td></tr></table>
-        <h2>📋 Detalle Consolidado</h2>
-        <table><tr><th>#</th><th>Tipo</th><th>Hora</th><th>Monto</th><th>Descripción</th><th>Cobrador</th><th>Archivo</th></tr>${todosDetalles.map((d,i) => `<tr><td>${i+1}</td><td><span class="badge ${d.tipo.includes('Efectivo')?'cash':'transfer'}">${d.tipo}</span></td><td>${d.hora}</td><td>$${d.monto.toLocaleString()}</td><td>${d.descripcion}</td><td>${d.cobrador}</td><td style="font-size:11px;">${d.archivo}</td></tr>`).join('')}</table>
-        </div></body></html>`;
+        const html = '\uFEFF' + `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Reporte Buffet</title><style>body { font-family: 'Segoe UI', Arial, sans-serif; margin: 30px; background: #f4f6fb; } .report-container { max-width: 950px; margin: auto; background: white; border-radius: 24px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); } .header { margin-bottom: 24px; border-bottom: 3px solid #8b5cf6; padding-bottom: 16px; } .logo { font-size: 24px; font-weight: 800; color: #8b5cf6; } .meta { color: #64748b; font-size: 14px; } table { width: 100%; border-collapse: collapse; margin-bottom: 28px; } th { background: #8b5cf6; color: white; padding: 10px; text-align: left; } td { padding: 8px; border-bottom: 1px solid #e2e8f0; } .badge { padding: 3px 10px; border-radius: 20px; font-weight: bold; font-size: 11px; } .cash { background: #d1fae5; color: #065f46; } .transfer { background: #dbeafe; color: #1e40af; } .footer { margin-top: 28px; text-align: center; color: #94a3b8; font-size: 12px; }</style></head><body><div class="report-container"><div class="header"><div class="logo">🍰 Buffet Torneo</div><div class="meta">${fecha} · Reporte de Ventas</div></div><h2>📊 Resumen</h2><table class="summary-table"><tr><th>Concepto</th><th>Monto</th></tr><tr><td>💵 Efectivo</td><td>$${totalEf.toLocaleString()}</td></tr><tr><td>📱 Transferencia</td><td>$${totalTr.toLocaleString()}</td></tr><tr><td>🧾 Operaciones</td><td>${ops}</td></tr><tr style="font-weight:bold;"><td>💰 TOTAL</td><td>$${(totalEf + totalTr).toLocaleString()}</td></tr></table><h2>📋 Detalle de Ventas</h2><table class="detail-table"><tr><th>#</th><th>Tipo</th><th>Hora</th><th>Monto</th><th>Descripción</th><th>Cobrador</th><th>Estado</th></tr>${data.movimientos.map(m => { const hora = new Date(m.timestamp).toLocaleString('es-AR', { hour:'2-digit', minute:'2-digit', second:'2-digit' }); const tipoBadge = m.tipo === 'efectivo' ? '<span class="badge cash">Efectivo</span>' : '<span class="badge transfer">Transferencia</span>'; const estado = m.error ? `<span style="color:#ef4444;">Anulado${m.notaError ? ': '+m.notaError : ''}</span>` : '✅'; return `<tr><td>${m.id}</td><td>${tipoBadge}</td><td>${hora}</td><td>$${m.monto.toLocaleString()}</td><td>${m.descripcion}</td><td>${m.cobrador}</td><td>${estado}</td></tr>`; }).join('')}</table><div class="footer">Generado por app Buffet Torneo</div></div></body></html>`;
         const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8' });
-        const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'Consolidado_Buffet.xls'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `Buffet_Reporte_${new Date().toISOString().slice(0,10)}.xls`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
     }
+
+    function cargarWhatsapp() { const guardado = localStorage.getItem('whatsappDestino'); if (guardado) document.getElementById('whatsapp-destino').value = guardado; }
+    function guardarWhatsapp() { const numero = document.getElementById('whatsapp-destino').value.trim(); localStorage.setItem('whatsappDestino', numero); }
+    document.getElementById('whatsapp-destino').addEventListener('change', guardarWhatsapp);
+    function actualizarEstadoConexion() { const estado = document.getElementById('estado-conexion'); const btn = document.getElementById('btn-whatsapp'); if (navigator.onLine) { estado.textContent = '✅ Conectado – podés enviar el reporte'; btn.disabled = false; } else { estado.textContent = '❌ Sin conexión – el reporte se enviará cuando vuelva internet'; btn.disabled = true; } }
+    window.addEventListener('online', actualizarEstadoConexion); window.addEventListener('offline', actualizarEstadoConexion);
+    function enviarPorWhatsApp() { const texto = document.getElementById('texto-exportar').value; let numero = document.getElementById('whatsapp-destino').value.trim(); if (!numero) { alert('Configurá tu número de WhatsApp primero.'); return; } guardarWhatsapp(); window.open(`https://wa.me/${numero}?text=${encodeURIComponent(texto)}`, '_blank'); }
+
+    function showHelp() { document.getElementById('modal-ayuda').classList.add('active'); }
+    function cerrarModalAyuda() { document.getElementById('modal-ayuda').classList.remove('active'); }
+
+    document.querySelectorAll('.modal').forEach(modal => { modal.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); }); });
+    document.getElementById('input-descripcion').addEventListener('keydown', function(e) { if (e.key === 'Enter' && !document.getElementById('btn-registrar-venta').disabled) registrarDesdeCalc(); });
+    document.getElementById('input-nuevo-cobrador').addEventListener('keydown', function(e) { if (e.key === 'Enter') confirmarCambioCobrador(); });
+    document.getElementById('input-nota-error').addEventListener('keydown', function(e) { if (e.key === 'Enter') confirmarMarcarError(); });
+
+    window.abrirRegistro = abrirRegistro; window.cerrarModalRegistro = cerrarModalRegistro; window.agregarACalc = agregarACalc; window.borrarUltimo = borrarUltimo; window.limpiarCalc = limpiarCalc; window.calcularResultado = calcularResultado; window.registrarDesdeCalc = registrarDesdeCalc;
+    window.abrirCambioCobrador = abrirCambioCobrador; window.cerrarModalCobrador = cerrarModalCobrador; window.confirmarCambioCobrador = confirmarCambioCobrador;
+    window.abrirHistorial = abrirHistorial; window.cerrarModalHistorial = cerrarModalHistorial; window.abrirExportar = abrirExportar; window.cerrarModalExportar = cerrarModalExportar;
+    window.copiarAlPortapapeles = copiarAlPortapapeles; window.descargarExcel = descargarExcel; window.enviarPorWhatsApp = enviarPorWhatsApp;
+    window.showHelp = showHelp; window.cerrarModalAyuda = cerrarModalAyuda; window.cerrarModalError = cerrarModalError; window.confirmarMarcarError = confirmarMarcarError;
+
+    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); }); }
+    cargarData(); actualizarUI();
+})();
 </script>
 </body>
 </html>
