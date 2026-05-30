@@ -67,6 +67,34 @@
             gap: 16px;
         }
 
+        /* TABS */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 16px;
+            border: 2px solid var(--border);
+            background: var(--stat-bg);
+            color: var(--text);
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .panel { display: none; }
+        .panel.active { display: flex; flex-direction: column; gap: 16px; }
+
         .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
         .logo { font-weight: 800; font-size: 1.3rem; color: var(--primary); letter-spacing: -0.5px; display: flex; align-items: center; gap: 6px; }
         .clock { font-size: 1.2rem; font-weight: 700; background: var(--stat-bg); padding: 6px 16px; border-radius: 30px; border: 1px solid var(--border); }
@@ -139,6 +167,19 @@
         .movimiento-meta { color: var(--subtext); font-size: 11px; }
         .error-badge { background: var(--danger); color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 700; white-space: nowrap; }
 
+        /* CONSOLIDADOR */
+        .drop-zone { border: 2px dashed var(--primary); border-radius: 16px; padding: 30px 20px; text-align: center; background: var(--stat-bg); }
+        .drop-zone.dragover { background: #ede9fe; }
+        .btn-select { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; display: inline-block; margin-top: 12px; }
+        .file-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--bg); border-radius: 10px; margin-bottom: 8px; font-size: 14px; flex-wrap: wrap; }
+        .btn-remove { background: var(--danger); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-weight: bold; }
+        .summary-preview table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .summary-preview th { background: var(--primary); color: white; padding: 8px; text-align: left; }
+        .summary-preview td { padding: 8px; border-bottom: 1px solid var(--border); }
+        .btn-generate { width: 100%; background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; border: none; border-radius: 16px; padding: 16px; font-weight: 800; font-size: 16px; cursor: pointer; }
+        .btn-generate:active { transform: scale(0.97); }
+        .btn-generate:disabled { opacity: 0.5; pointer-events: none; }
+
         .pulse { animation: pulse 0.4s ease; }
         @keyframes pulse {
             0% { transform: scale(1); }
@@ -149,48 +190,71 @@
 </head>
 <body>
 <div class="app-container">
-    <div class="header">
-        <span class="logo">🍰 Buffet Torneo</span>
-        <span class="clock" id="live-clock">--:--:--</span>
-        <div style="display:flex; gap:6px;">
-            <button class="icon-btn" onclick="toggleDark()" title="Modo oscuro">🌓</button>
-            <button class="icon-btn" onclick="showHelp()" title="Ayuda">❓</button>
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab-btn active" id="tab-buffet" onclick="cambiarPanel('buffet')">🍰 Buffet</button>
+        <button class="tab-btn" id="tab-consolidador" onclick="cambiarPanel('consolidador')">📊 Consolidador</button>
+    </div>
+
+    <!-- PANEL BUFFET -->
+    <div id="panel-buffet" class="panel active">
+        <div class="header">
+            <span class="logo">🍰 Buffet Torneo</span>
+            <span class="clock" id="live-clock">--:--:--</span>
+            <div style="display:flex; gap:6px;">
+                <button class="icon-btn" onclick="toggleDark()" title="Modo oscuro">🌓</button>
+                <button class="icon-btn" onclick="showHelp()" title="Ayuda">❓</button>
+            </div>
+        </div>
+
+        <div class="cobrador-box">
+            <div>
+                <div class="cobrador-label">👤 Cobrador de turno</div>
+                <div class="cobrador-nombre" id="cobrador-actual-nombre">—</div>
+            </div>
+            <button class="btn-cambiar-cobrador" onclick="abrirCambioCobrador()">🔄 Cambiar</button>
+        </div>
+
+        <div class="last-entry" id="last-entry-text">Último registro: —</div>
+
+        <div class="buttons-grid">
+            <button class="entry-btn cash-btn" onclick="abrirRegistro('efectivo')">
+                <span class="icono">💵</span><span>Efectivo</span><span class="texto">Calculadora + venta</span>
+            </button>
+            <button class="entry-btn transfer-btn" onclick="abrirRegistro('transferencia')">
+                <span class="icono">📱</span><span>Transferencia</span><span class="texto">Calculadora + venta</span>
+            </button>
+        </div>
+
+        <div class="stats-card">
+            <div class="stat-row"><span>💵 Efectivo</span><span class="stat-value" id="total-efectivo">$0</span></div>
+            <div class="stat-row"><span>📱 Transferencia</span><span class="stat-value" id="total-transferencia">$0</span></div>
+            <div class="stat-row" style="font-weight:800;"><span>🧾 Operaciones</span><span class="stat-value" id="cantidad-operaciones">0</span></div>
+            <div class="stat-row total-row"><span>💰 TOTAL</span><span class="stat-value" id="total-general">$0</span></div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-historial" onclick="abrirHistorial()">📋 Historial</button>
+            <button class="btn btn-exportar" onclick="abrirExportar()">📥 Cierre de caja</button>
         </div>
     </div>
 
-    <div class="cobrador-box">
-        <div>
-            <div class="cobrador-label">👤 Cobrador de turno</div>
-            <div class="cobrador-nombre" id="cobrador-actual-nombre">—</div>
+    <!-- PANEL CONSOLIDADOR -->
+    <div id="panel-consolidador" class="panel">
+        <h3>📊 Consolidador de Reportes</h3>
+        <p style="color:var(--subtext);">Arrastrá los archivos <strong>.xls</strong> generados por cada puesto</p>
+        <div class="drop-zone" id="dropZone">
+            <p>Soltá los archivos aquí o</p>
+            <label class="btn-select">Seleccionar archivos<input type="file" id="fileInput" multiple accept=".xls,.xlsx" style="display:none;"></label>
         </div>
-        <button class="btn-cambiar-cobrador" onclick="abrirCambioCobrador()">🔄 Cambiar</button>
-    </div>
-
-    <div class="last-entry" id="last-entry-text">Último registro: —</div>
-
-    <div class="buttons-grid">
-        <button class="entry-btn cash-btn" onclick="abrirRegistro('efectivo')">
-            <span class="icono">💵</span><span>Efectivo</span><span class="texto">Calculadora + venta</span>
-        </button>
-        <button class="entry-btn transfer-btn" onclick="abrirRegistro('transferencia')">
-            <span class="icono">📱</span><span>Transferencia</span><span class="texto">Calculadora + venta</span>
-        </button>
-    </div>
-
-    <div class="stats-card">
-        <div class="stat-row"><span>💵 Efectivo</span><span class="stat-value" id="total-efectivo">$0</span></div>
-        <div class="stat-row"><span>📱 Transferencia</span><span class="stat-value" id="total-transferencia">$0</span></div>
-        <div class="stat-row" style="font-weight:800;"><span>🧾 Operaciones</span><span class="stat-value" id="cantidad-operaciones">0</span></div>
-        <div class="stat-row total-row"><span>💰 TOTAL</span><span class="stat-value" id="total-general">$0</span></div>
-    </div>
-
-    <div class="action-buttons">
-        <button class="btn btn-historial" onclick="abrirHistorial()">📋 Historial</button>
-        <button class="btn btn-exportar" onclick="abrirExportar()">📥 Cierre de caja</button>
+        <div id="fileList"></div>
+        <div id="summaryPreview" class="summary-preview"></div>
+        <button class="btn-generate" id="btnGenerate" disabled onclick="generarConsolidado()">📥 Generar Reporte Consolidado</button>
+        <div id="errorMsg" style="color:var(--danger); margin-top:8px;"></div>
     </div>
 </div>
 
-<!-- MODAL REGISTRO -->
+<!-- MODALES (igual que antes) -->
 <div class="modal" id="modal-registro">
     <div class="modal-content">
         <h3 id="modal-registro-titulo">💵 Calculadora - Efectivo</h3>
@@ -210,7 +274,6 @@
     </div>
 </div>
 
-<!-- MODAL CAMBIAR COBRADOR -->
 <div class="modal" id="modal-cobrador">
     <div class="modal-content">
         <h3>🔄 Cambiar cobrador</h3>
@@ -222,7 +285,6 @@
     </div>
 </div>
 
-<!-- MODAL HISTORIAL -->
 <div class="modal" id="modal-historial">
     <div class="modal-content" style="max-height:85vh;">
         <h3>📋 Historial de movimientos</h3>
@@ -231,7 +293,6 @@
     </div>
 </div>
 
-<!-- MODAL EXPORTAR -->
 <div class="modal" id="modal-exportar">
     <div class="modal-content">
         <h3>📥 Cierre de caja – Resumen</h3>
@@ -250,7 +311,6 @@
     </div>
 </div>
 
-<!-- MODAL AYUDA -->
 <div class="modal" id="modal-ayuda">
     <div class="modal-content">
         <h3>📘 ¿Cómo usar el Buffet?</h3>
@@ -259,12 +319,12 @@
             <li><strong>Registrar venta:</strong> usá la calculadora o tipeá el monto directo. La descripción es opcional.</li>
             <li><strong>Historial:</strong> revisá todos los movimientos. Si algo fue error, marcalo con "Marcar error".</li>
             <li><strong>Cierre de caja:</strong> generá el resumen, descargá el Excel o enviá por WhatsApp.</li>
+            <li><strong>Consolidador:</strong> usá la pestaña de arriba para juntar todos los reportes.</li>
         </ol>
         <button class="btn-confirm" style="width:100%;margin-top:12px;" onclick="cerrarModalAyuda()">Entendido</button>
     </div>
 </div>
 
-<!-- MODAL MARCAR ERROR -->
 <div class="modal" id="modal-error">
     <div class="modal-content">
         <h3>⚠️ Marcar como error</h3>
@@ -278,6 +338,15 @@
 </div>
 
 <script>
+// ============ LÓGICA DE PANELES ============
+function cambiarPanel(panel) {
+    document.getElementById('tab-buffet').classList.toggle('active', panel === 'buffet');
+    document.getElementById('tab-consolidador').classList.toggle('active', panel === 'consolidador');
+    document.getElementById('panel-buffet').classList.toggle('active', panel === 'buffet');
+    document.getElementById('panel-consolidador').classList.toggle('active', panel === 'consolidador');
+}
+
+// ============ LÓGICA DEL BUFFET (existente) ============
 (function() {
     const STORAGE_KEY = 'buffetTorneoData_v2';
     let data = { cobradorActual: '', historialCobradores: [], movimientos: [] };
@@ -424,6 +493,98 @@
     if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); }); }
     cargarData(); actualizarUI();
 })();
+
+// ============ LÓGICA DEL CONSOLIDADOR ============
+let loadedData = [];
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const fileListDiv = document.getElementById('fileList');
+const btnGenerate = document.getElementById('btnGenerate');
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+function handleFiles(files) {
+    loadedData = []; fileListDiv.innerHTML = ''; btnGenerate.disabled = true;
+    Array.from(files).forEach(file => {
+        if (!file.name.endsWith('.xls') && !file.name.endsWith('.xlsx')) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            const data = extraerDatos(e.target.result, file.name);
+            if (data) loadedData.push(data);
+            actualizarLista();
+        };
+        reader.readAsText(file);
+    });
+}
+
+function extraerDatos(html, fileName) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const summary = doc.querySelector('.summary-table');
+    const detail = doc.querySelector('.detail-table');
+    if (!summary || !detail) return null;
+
+    const rows = summary.querySelectorAll('tr');
+    let efectivo = 0, transferencia = 0, operaciones = 0, total = 0;
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 2) {
+            const concepto = cells[0].textContent.trim();
+            const monto = parseInt(cells[1].textContent.replace(/[^0-9]/g, '')) || 0;
+            if (concepto.includes('Efectivo')) efectivo = monto;
+            else if (concepto.includes('Transferencia')) transferencia = monto;
+            else if (concepto.includes('Operaciones')) operaciones = parseInt(cells[1].textContent) || 0;
+            else if (concepto.includes('TOTAL')) total = monto;
+        }
+    });
+
+    const detailRows = detail.querySelectorAll('tr');
+    let detalles = [];
+    detailRows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length < 7) return;
+        const id = cells[0].textContent.trim(); if (!id) return;
+        detalles.push({
+            id: id,
+            tipo: cells[1].textContent.trim(),
+            hora: cells[2].textContent.trim(),
+            monto: parseInt(cells[3].textContent.replace(/[^0-9]/g, '')) || 0,
+            descripcion: cells[4].textContent.trim(),
+            cobrador: cells[5].textContent.trim(),
+            estado: cells[6].textContent.trim()
+        });
+    });
+
+    return { fileName, efectivo, transferencia, operaciones, total, detalles };
+}
+
+function actualizarLista() {
+    fileListDiv.innerHTML = loadedData.map((d, i) => `<div class="file-item"><span>📄 ${d.fileName}</span><span>${d.detalles.length} ventas · $${d.total.toLocaleString()}</span><button class="btn-remove" onclick="eliminar(${i})">✕</button></div>`).join('');
+    const totalGral = loadedData.reduce((s,d) => s + d.total, 0);
+    document.getElementById('summaryPreview').innerHTML = loadedData.length ? `<table><tr><th>Archivo</th><th>Ventas</th><th>Total</th></tr>${loadedData.map(d => `<tr><td>${d.fileName}</td><td>${d.detalles.length}</td><td>$${d.total.toLocaleString()}</td></tr>`).join('')}<tr style="font-weight:bold;"><td colspan="2">TOTAL CONSOLIDADO</td><td>$${totalGral.toLocaleString()}</td></tr></table>` : '';
+    btnGenerate.disabled = loadedData.length === 0;
+}
+
+function eliminar(i) { loadedData.splice(i,1); actualizarLista(); }
+window.eliminar = eliminar;
+
+function generarConsolidado() {
+    const todosDetalles = loadedData.flatMap(d => d.detalles.map(det => ({ ...det, archivo: d.fileName })));
+    const totalEf = loadedData.reduce((s,d) => s + d.efectivo, 0);
+    const totalTr = loadedData.reduce((s,d) => s + d.transferencia, 0);
+    const fecha = new Date().toLocaleDateString('es-AR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    const html = '\uFEFF' + `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Consolidado Buffet</title><style>body { font-family: 'Segoe UI', Arial, sans-serif; margin: 30px; background: #f4f6fb; } .report-container { max-width: 1200px; margin: auto; background: white; border-radius: 24px; padding: 30px; } .header { margin-bottom: 24px; border-bottom: 3px solid #8b5cf6; padding-bottom: 16px; } .logo { font-size: 24px; font-weight: 800; color: #8b5cf6; } table { width: 100%; border-collapse: collapse; margin-bottom: 20px; } th { background: #8b5cf6; color: white; padding: 10px; text-align: left; } td { padding: 8px; border-bottom: 1px solid #e2e8f0; } .badge { padding: 3px 10px; border-radius: 20px; font-weight: bold; font-size: 11px; } .cash { background: #d1fae5; color: #065f46; } .transfer { background: #dbeafe; color: #1e40af; }</style></head><body><div class="report-container"><div class="header"><div class="logo">🍰 Buffet Torneo – Consolidado</div><div>${fecha} · ${loadedData.length} archivos</div></div>
+    <h2>📊 Resumen General</h2>
+    <table><tr><th>Concepto</th><th>Monto</th></tr><tr><td>💵 Efectivo</td><td>$${totalEf.toLocaleString()}</td></tr><tr><td>📱 Transferencia</td><td>$${totalTr.toLocaleString()}</td></tr><tr style="font-weight:bold;"><td>💰 TOTAL</td><td>$${(totalEf+totalTr).toLocaleString()}</td></tr></table>
+    <h2>📋 Detalle Consolidado</h2>
+    <table><tr><th>#</th><th>Tipo</th><th>Hora</th><th>Monto</th><th>Descripción</th><th>Cobrador</th><th>Archivo</th></tr>${todosDetalles.map((d,i) => `<tr><td>${i+1}</td><td><span class="badge ${d.tipo.includes('Efectivo')?'cash':'transfer'}">${d.tipo}</span></td><td>${d.hora}</td><td>$${d.monto.toLocaleString()}</td><td>${d.descripcion}</td><td>${d.cobrador}</td><td style="font-size:11px;">${d.archivo}</td></tr>`).join('')}</table>
+    </div></body></html>`;
+    const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8' });
+    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'Consolidado_Buffet.xls'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+}
 </script>
 </body>
 </html>
