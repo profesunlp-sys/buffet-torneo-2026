@@ -37,29 +37,29 @@
             font-family: 'Inter', system-ui, sans-serif;
             background: var(--bg);
             color: var(--text);
-            height: 100vh;
+            /* Altura dinámica: 100dvh se adapta a la barra de navegación */
+            height: 100dvh;
+            height: 100vh; /* fallback */
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 12px;
+            padding: 0; /* sin padding extra */
             transition: background 0.3s, color 0.3s;
             -webkit-tap-highlight-color: transparent;
             overflow: hidden;
         }
         .app-container {
             width: 100%;
-            max-width: 500px;
             height: 100%;
-            max-height: 900px;
             background: var(--card);
-            border-radius: 24px;
-            padding: 16px 14px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border-radius: 0; /* sin bordes redondeados para aprovechar pantalla completa */
+            padding: 12px 14px 8px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             transition: background 0.3s;
             overflow: hidden;
+            box-shadow: none;
         }
 
         /* TABS siempre visibles */
@@ -70,17 +70,16 @@
         }
         .tab-btn {
             flex: 1;
-            padding: 12px 8px;
+            padding: 10px 8px;
             border-radius: 16px;
             border: 2px solid var(--border);
             background: var(--stat-bg);
             color: var(--text);
             font-weight: 700;
-            font-size: 15px;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.2s;
             text-align: center;
-            background: var(--stat-bg);
         }
         .tab-btn.active {
             background: var(--primary);
@@ -91,7 +90,7 @@
         .panel {
             display: none;
             flex-direction: column;
-            gap: 10px;
+            gap: 6px;
             flex: 1;
             overflow-y: auto;
         }
@@ -112,16 +111,16 @@
             font-size: 1rem;
             font-weight: 700;
             background: var(--stat-bg);
-            padding: 5px 12px;
-            border-radius: 20px;
+            padding: 4px 10px;
+            border-radius: 16px;
             border: 1px solid var(--border);
         }
         .icon-btn {
             background: var(--stat-bg);
             border: 1px solid var(--border);
             border-radius: 50%;
-            width: 34px;
-            height: 34px;
+            width: 30px;
+            height: 30px;
             font-size: 16px;
             cursor: pointer;
             display: flex;
@@ -134,83 +133,91 @@
         .cobrador-box {
             background: linear-gradient(135deg, #ede9fe, #ddd6fe);
             border: 2px solid var(--primary);
-            border-radius: 14px;
-            padding: 10px 14px;
+            border-radius: 12px;
+            padding: 8px 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 8px;
+            gap: 6px;
             flex-shrink: 0;
         }
-        .cobrador-label { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--primary); }
-        .cobrador-nombre { font-size: 18px; font-weight: 800; color: #4c1d95; }
+        .cobrador-label { font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--primary); }
+        .cobrador-nombre { font-size: 16px; font-weight: 800; color: #4c1d95; }
         .btn-cambiar-cobrador {
             background: var(--primary);
             color: white;
             border: none;
-            border-radius: 12px;
-            padding: 8px 14px;
+            border-radius: 10px;
+            padding: 6px 12px;
             font-weight: 700;
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
             white-space: nowrap;
         }
 
         .last-entry {
             text-align: center;
-            font-size: 11px;
+            font-size: 10px;
             color: var(--subtext);
-            min-height: 18px;
+            min-height: 16px;
             flex-shrink: 0;
         }
 
         .buttons-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 8px;
             flex-shrink: 0;
         }
         .entry-btn {
             border: none;
-            border-radius: 18px;
-            padding: 20px 10px;
+            border-radius: 16px;
+            padding: 18px 8px;
             color: white;
             font-weight: 700;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.2);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 2px;
         }
         .cash-btn { background: linear-gradient(135deg, var(--efectivo), var(--efectivo-dark)); }
         .transfer-btn { background: linear-gradient(135deg, var(--transferencia), var(--transferencia-dark)); }
-        .entry-btn .icono { font-size: 30px; }
+        .entry-btn .icono { font-size: 28px; }
 
+        /* BLOQUE DE RESUMEN: ahora ocupa el espacio disponible */
         .stats-card {
             background: var(--stat-bg);
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 12px;
-            flex-shrink: 0;
+            flex: 1; /* se estira para llenar el espacio sobrante */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 8px;
+            min-height: 0; /* necesario para flex */
         }
         .stat-row {
             display: flex;
             justify-content: space-between;
-            padding: 5px 0;
-            font-size: 14px;
+            align-items: center;
+            padding: 6px 0;
+            font-size: 17px;
             border-bottom: 1px solid var(--border);
         }
         .stat-row:last-child { border-bottom: none; }
         .total-row {
-            font-size: 18px;
+            font-size: 24px;
             font-weight: 800;
             color: var(--success);
             border-top: 2px solid var(--border);
-            padding-top: 8px;
-            margin-top: 4px;
+            padding-top: 10px;
+            margin-top: 6px;
         }
+        .stat-value { font-weight: 700; }
 
         .action-buttons {
             display: flex;
@@ -240,7 +247,7 @@
             z-index: 200;
             flex-direction: column;
             padding: 20px 16px 16px;
-            gap: 12px;
+            gap: 10px;
             overflow-y: auto;
         }
         .modal-fullscreen.active { display: flex; }
@@ -348,7 +355,7 @@
         /* Textarea del cierre */
         .textarea-cierre {
             flex: 1;
-            min-height: 150px;
+            min-height: 120px;
             font-family: monospace;
             font-size: 13px;
             background: var(--stat-bg);
@@ -364,7 +371,7 @@
         .drop-zone {
             border: 2px dashed var(--primary);
             border-radius: 16px;
-            padding: 20px;
+            padding: 16px;
             text-align: center;
             background: var(--stat-bg);
         }
@@ -464,6 +471,7 @@
             <button class="entry-btn cash-btn" onclick="abrirRegistro('efectivo')"><span class="icono">💵</span> Efectivo</button>
             <button class="entry-btn transfer-btn" onclick="abrirRegistro('transferencia')"><span class="icono">📱</span> Transferencia</button>
         </div>
+        <!-- Bloque de resumen que ahora se estira -->
         <div class="stats-card">
             <div class="stat-row"><span>💵 Efectivo</span><span class="stat-value" id="total-efectivo">$0</span></div>
             <div class="stat-row"><span>📱 Transferencia</span><span class="stat-value" id="total-transferencia">$0</span></div>
