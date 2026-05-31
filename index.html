@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Buffet – Torneo Gimnasia Artística</title>
+    <title>Buffet MultiCobrador – Torneo Gimnasia</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#8b5cf6">
     <style>
@@ -100,6 +100,17 @@
         .btn-cambiar-cobrador { background: var(--primary); color: white; border: none; border-radius: 14px; padding: 5px 12px; font-weight: 700; font-size: 12px; cursor: pointer; white-space: nowrap; transition: transform 0.15s; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4); }
         .btn-cambiar-cobrador:active { transform: scale(0.94); }
 
+        .turno-info {
+            background: var(--stat-bg);
+            border-radius: 12px;
+            padding: 6px 10px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--subtext);
+            border: 1px dashed var(--border);
+        }
+        .turno-info span { font-weight: 700; color: var(--primary); }
+
         .last-entry {
             text-align: center;
             font-size: 11px;
@@ -108,7 +119,6 @@
             padding: 4px 0;
         }
 
-        /* BOTONES GRANDES */
         .buttons-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -137,7 +147,6 @@
         .entry-btn .icono { font-size: 28px; }
         .entry-btn .texto { font-size: 14px; opacity: 0.95; font-weight: 600; }
 
-        /* TARJETA DE ESTADÍSTICAS */
         .stats-card {
             background: var(--stat-bg);
             border: 1px solid var(--border);
@@ -163,7 +172,6 @@
         }
         .stat-value { font-weight: 700; }
 
-        /* BOTONES DE ACCIÓN - AHORA MÁS ARRIBA */
         .action-buttons {
             display: flex;
             gap: 12px;
@@ -185,28 +193,13 @@
         .btn:active { transform: scale(0.96); }
         .btn-historial { background: #64748b; }
         .btn-exportar { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
+        .btn-cobradores { background: linear-gradient(135deg, #f59e0b, #d97706); }
 
-        /* MODALES - Calculadora sin teclado físico */
+        /* MODALES */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
         .modal.active { display: flex; }
         .modal-content { background: var(--card); border-radius: var(--radius-modal); padding: 20px; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; color: var(--text); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); }
-        .modal-content h3 { margin-bottom: 14px; color: var(--primary); font-size: 18px; }
-        
-        /* DESACTIVAMOS EL TECLADO DEL SISTEMA */
-        .modal-content input, .modal-content textarea {
-            width: 100%;
-            padding: 10px;
-            border-radius: 10px;
-            border: 2px solid var(--border);
-            font-size: 15px;
-            margin-bottom: 10px;
-            background: var(--bg);
-            color: var(--text);
-            font-family: inherit;
-            pointer-events: none;
-            user-select: none;
-            background-color: var(--stat-bg);
-        }
+        .modal-content h3 { margin-bottom: 14px; color: var(--primary); font-size: 18px; display: flex; align-items: center; gap: 8px; }
         
         .calc-display {
             background: var(--stat-bg);
@@ -219,7 +212,6 @@
             min-height: 70px;
             margin-bottom: 12px;
             font-family: monospace;
-            letter-spacing: 2px;
         }
         .calc-grid {
             display: grid;
@@ -236,39 +228,73 @@
             font-weight: 700;
             cursor: pointer;
             text-align: center;
-            transition: all 0.1s;
             user-select: none;
         }
         .calc-btn:active { transform: scale(0.94); background: var(--border); }
         .calc-btn.operador { background: var(--primary); color: white; border-color: var(--primary); font-size: 28px; }
-        .calc-btn.igual { background: var(--success); color: white; font-size: 24px; }
+        .calc-btn.igual { background: var(--success); color: white; }
         .calc-btn.borrar { background: var(--danger); color: white; }
-        .calc-btn.backspace { background: var(--warning); color: #1e293b; font-size: 24px; }
+        .calc-btn.backspace { background: var(--warning); color: #1e293b; }
+        
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 2px solid var(--border);
+            font-size: 15px;
+            margin-bottom: 10px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: inherit;
+            pointer-events: none;
+            user-select: none;
+        }
         
         .btn-confirm { background: var(--success); color: white; border: none; border-radius: 10px; padding: 12px; cursor: pointer; font-weight: 700; width: 100%; margin-top: 6px; }
         .btn-cancel { background: #94a3b8; color: white; border: none; border-radius: 10px; padding: 10px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 6px; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-small { background: var(--warning); color: #1e293b; border: none; border-radius: 8px; padding: 4px 10px; cursor: pointer; font-weight: 700; font-size: 11px; }
-        .movimiento-item { background: var(--stat-bg); border: 1px solid var(--border); border-radius: 14px; padding: 10px; margin-bottom: 8px; font-size: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-        .tipo-efectivo { background: #d1fae5; color: #065f46; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; }
-        .tipo-transferencia { background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+        
+        .movimiento-item {
+            background: var(--stat-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 10px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        .movimiento-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .tipo-efectivo { background: #d1fae5; color: #065f46; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; display: inline-block; }
+        .tipo-transferencia { background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; display: inline-block; }
+        .cobrador-tag { background: var(--primary); color: white; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; display: inline-block; }
+        .error-tag { background: var(--danger); color: white; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+        
+        .cobrador-item {
+            background: var(--stat-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
         .pulse { animation: pulse 0.4s ease; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.06); color: var(--success); } 100% { transform: scale(1); } }
-        
-        /* Evitamos que aparezca el teclado en cualquier input numérico */
-        input, textarea {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            user-select: none;
-            pointer-events: none;
-        }
     </style>
 </head>
 <body>
 <div class="app-container">
-    <!-- HEADER -->
     <div class="header">
-        <span class="logo">🍰 Buffet Torneo</span>
+        <span class="logo">🍰 Buffet MultiCobrador</span>
         <span class="clock" id="live-clock">--:--:--</span>
         <div style="display:flex; gap:6px;">
             <button class="icon-btn" onclick="toggleDark()" title="Modo oscuro">🌓</button>
@@ -276,19 +302,20 @@
         </div>
     </div>
 
-    <!-- COBRADOR -->
     <div class="cobrador-box">
         <div>
-            <div class="cobrador-label">👤 COBRADOR</div>
+            <div class="cobrador-label">👤 COBRADOR DE TURNO</div>
             <div class="cobrador-nombre" id="cobrador-actual-nombre">—</div>
         </div>
         <button class="btn-cambiar-cobrador" onclick="abrirCambioCobrador()">🔄 Cambiar</button>
     </div>
 
-    <!-- ÚLTIMO REGISTRO -->
+    <div class="turno-info" id="turno-info">
+        📅 Turno iniciado: <span id="turno-inicio">—</span>
+    </div>
+
     <div class="last-entry" id="last-entry-text">Último registro: —</div>
 
-    <!-- BOTONES PRINCIPALES -->
     <div class="buttons-grid">
         <button class="entry-btn cash-btn" onclick="abrirRegistro('efectivo')">
             <span class="icono">💵</span>
@@ -300,7 +327,6 @@
         </button>
     </div>
 
-    <!-- ESTADÍSTICAS -->
     <div class="stats-card">
         <div class="stat-row"><span>💵 Efectivo</span><span class="stat-value" id="total-efectivo">$0</span></div>
         <div class="stat-row"><span>📱 Transferencia</span><span class="stat-value" id="total-transferencia">$0</span></div>
@@ -308,9 +334,9 @@
         <div class="stat-row total-row"><span>💰 TOTAL</span><span class="stat-value" id="total-general">$0</span></div>
     </div>
 
-    <!-- BOTONES INFERIORES (HISTORIAL Y CIERRE) - SUBIDOS -->
     <div class="action-buttons">
         <button class="btn btn-historial" onclick="abrirHistorial()">📋 Historial</button>
+        <button class="btn btn-cobradores" onclick="abrirListaCobradores()">👥 Cobradores</button>
         <button class="btn btn-exportar" onclick="abrirExportar()">📥 Cierre</button>
     </div>
 </div>
@@ -357,9 +383,23 @@
 
 <div class="modal" id="modal-historial">
     <div class="modal-content">
-        <h3>📋 Historial</h3>
+        <h3>📋 Historial completo</h3>
+        <div style="margin-bottom: 10px;">
+            <button class="btn-small" onclick="filtrarHistorial('todos')" style="background: var(--primary); color:white;">📋 Todos</button>
+            <button class="btn-small" onclick="filtrarHistorial('efectivo')" style="background: var(--efectivo);">💵 Efectivo</button>
+            <button class="btn-small" onclick="filtrarHistorial('transferencia')" style="background: var(--transferencia);">📱 Transferencia</button>
+            <button class="btn-small" onclick="filtrarHistorial('cobradorActual')" style="background: var(--warning);">👤 Mi turno</button>
+        </div>
         <div id="historial-lista" style="max-height:50vh;overflow-y:auto;"></div>
         <button class="btn-cancel" onclick="cerrarModalHistorial()">Cerrar</button>
+    </div>
+</div>
+
+<div class="modal" id="modal-cobradores">
+    <div class="modal-content">
+        <h3>👥 Historial de cobradores</h3>
+        <div id="lista-cobradores" style="max-height:60vh;overflow-y:auto;"></div>
+        <button class="btn-cancel" onclick="cerrarModalCobradores()">Cerrar</button>
     </div>
 </div>
 
@@ -377,18 +417,23 @@
 
 <div class="modal" id="modal-ayuda">
     <div class="modal-content">
-        <h3>📘 Ayuda</h3>
-        <p><strong>Uso:</strong> Cambiá cobrador, usá los botones grandes, registrá montos con la calculadora táctil de la app. El historial permite marcar errores. El cierre de caja genera reporte.</p>
-        <p><strong>📱 Xiaomi Redmi Note 5 Pro:</strong> El teclado del sistema está desactivado. Usá solo los botones de la calculadora.</p>
+        <h3>📘 Ayuda - MultiCobrador</h3>
+        <p><strong>👥 Para múltiples cobradores:</strong></p>
+        <ul style="padding-left:20px;margin:10px 0;">
+            <li>Cada cobrador debe <strong>cambiar el nombre</strong> al iniciar su turno</li>
+            <li>Cada venta registra <strong>automáticamente</strong> quién la hizo</li>
+            <li>El historial se puede filtrar por <strong>cobrador actual</strong> o tipo de pago</li>
+            <li>El cierre de caja muestra <strong>todos los movimientos con su cobrador</strong></li>
+        </ul>
         <button class="btn-confirm" onclick="cerrarModalAyuda()">Entendido</button>
     </div>
 </div>
 
 <div class="modal" id="modal-error">
     <div class="modal-content">
-        <h3>⚠️ Marcar error</h3>
+        <h3>⚠️ Marcar como error</h3>
         <p id="error-movimiento-info"></p>
-        <input type="text" id="input-nota-error" placeholder="Nota (opcional)" readonly onfocus="this.blur()">
+        <input type="text" id="input-nota-error" placeholder="Nota aclaratoria (opcional)" readonly onfocus="this.blur()">
         <button class="btn-danger" onclick="confirmarMarcarError()">Marcar error</button>
         <button class="btn-cancel" onclick="cerrarModalError()">Cancelar</button>
     </div>
@@ -396,13 +441,19 @@
 
 <script>
 (function() {
-    const STORAGE_KEY = 'buffetTorneoData_v2';
-    let data = { cobradorActual: '', historialCobradores: [], movimientos: [] };
+    const STORAGE_KEY = 'buffetMultiCobrador_v3';
+    let data = { 
+        cobradorActual: '', 
+        turnoInicio: null,
+        historialCobradores: [], 
+        movimientos: [] 
+    };
     let idCounter = 0;
     let tipoRegistroPendiente = null;
     let movimientoAError = null;
     let calcExpression = '';
     let calcResult = null;
+    let filtroHistorialActual = 'todos';
 
     function cargarData() {
         const stored = localStorage.getItem(STORAGE_KEY);
@@ -411,11 +462,19 @@
                 data = JSON.parse(stored);
                 if (!data.historialCobradores) data.historialCobradores = [];
                 if (!data.movimientos) data.movimientos = [];
-                data.movimientos.forEach(m => { if (m.error === undefined) m.error = false; if (!m.notaError) m.notaError = ''; });
+                if (!data.turnoInicio) data.turnoInicio = null;
+                data.movimientos.forEach(m => { 
+                    if (m.error === undefined) m.error = false; 
+                    if (!m.notaError) m.notaError = ''; 
+                });
                 if (data.movimientos.length > 0) idCounter = Math.max(...data.movimientos.map(m => m.id || 0));
-            } catch (e) { data = { cobradorActual: '', historialCobradores: [], movimientos: [] }; }
+            } catch (e) { data = { cobradorActual: '', turnoInicio: null, historialCobradores: [], movimientos: [] }; }
         }
-        if (!data.cobradorActual) { data.cobradorActual = 'Equipo Buffet'; data.historialCobradores.push({ nombre: 'Equipo Buffet', timestamp: new Date().toISOString() }); }
+        if (!data.cobradorActual) { 
+            data.cobradorActual = 'Equipo Buffet'; 
+            data.turnoInicio = new Date().toISOString();
+            data.historialCobradores.push({ nombre: 'Equipo Buffet', timestamp: new Date().toISOString() });
+        }
         guardarData();
     }
     function guardarData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
@@ -429,15 +488,21 @@
 
     function actualizarUI() {
         document.getElementById('cobrador-actual-nombre').textContent = data.cobradorActual || '—';
+        if (data.turnoInicio) {
+            const inicio = new Date(data.turnoInicio).toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
+            document.getElementById('turno-inicio').textContent = inicio;
+        }
+        
         let totalEf = 0, totalTr = 0, ops = 0;
         data.movimientos.forEach(m => { if (!m.error) { if (m.tipo === 'efectivo') totalEf += m.monto; else totalTr += m.monto; ops++; } });
         document.getElementById('total-efectivo').textContent = '$' + totalEf.toLocaleString('es-AR');
         document.getElementById('total-transferencia').textContent = '$' + totalTr.toLocaleString('es-AR');
         document.getElementById('cantidad-operaciones').textContent = ops;
         document.getElementById('total-general').textContent = '$' + (totalEf + totalTr).toLocaleString('es-AR');
+        
         const ultimo = data.movimientos.length > 0 ? data.movimientos[data.movimientos.length-1] : null;
         if (ultimo) {
-            const tipoStr = ultimo.tipo === 'efectivo' ? '💵 Efectivo' : '📱 Transferencia';
+            const tipoStr = ultimo.tipo === 'efectivo' ? '💵' : '📱';
             const fecha = new Date(ultimo.timestamp).toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
             document.getElementById('last-entry-text').textContent = `Último: ${tipoStr} $${ultimo.monto.toLocaleString('es-AR')} · ${fecha} · ${ultimo.cobrador}${ultimo.error ? ' ⚠️ ANULADO' : ''}`;
         } else { document.getElementById('last-entry-text').textContent = 'Último registro: —'; }
@@ -535,49 +600,170 @@
         if (navigator.vibrate) navigator.vibrate(40);
     }
 
-    function abrirCambioCobrador() { document.getElementById('input-nuevo-cobrador').value = ''; document.getElementById('modal-cobrador').classList.add('active'); }
+    function abrirCambioCobrador() { 
+        document.getElementById('input-nuevo-cobrador').value = ''; 
+        document.getElementById('modal-cobrador').classList.add('active'); 
+    }
     function cerrarModalCobrador() { document.getElementById('modal-cobrador').classList.remove('active'); }
-    function confirmarCambioCobrador() { const nombre = document.getElementById('input-nuevo-cobrador').value.trim(); if (!nombre) return alert('Ingresá un nombre'); data.cobradorActual = nombre; data.historialCobradores.push({ nombre, timestamp: new Date().toISOString() }); guardarData(); actualizarUI(); cerrarModalCobrador(); }
+    function confirmarCambioCobrador() { 
+        const nombre = document.getElementById('input-nuevo-cobrador').value.trim(); 
+        if (!nombre) return alert('Ingresá un nombre'); 
+        data.cobradorActual = nombre; 
+        data.turnoInicio = new Date().toISOString();
+        data.historialCobradores.push({ nombre, timestamp: new Date().toISOString() }); 
+        guardarData(); 
+        actualizarUI(); 
+        cerrarModalCobrador(); 
+    }
 
-    function abrirHistorial() {
-        const lista = document.getElementById('historial-lista');
-        if (data.movimientos.length === 0) lista.innerHTML = '<p style="text-align:center;">Sin movimientos</p>';
-        else {
-            let html = ''; 
-            [...data.movimientos].reverse().forEach(m => {
-                const fecha = new Date(m.timestamp).toLocaleString('es-AR');
-                html += `<div class="movimiento-item">
-                    <span class="${m.tipo === 'efectivo' ? 'tipo-efectivo' : 'tipo-transferencia'}">${m.tipo === 'efectivo' ? '💵 Efectivo' : '📱 Transferencia'}</span>
-                    <div style="flex:1">
-                        <strong>$${m.monto.toLocaleString('es-AR')}</strong><br>
-                        <small>${m.descripcion}</small><br>
-                        <small>${fecha} · ${m.cobrador}</small>
-                        ${m.error ? `<br><span style="color:red;">⚠️ Error: ${m.notaError || 'sin nota'}</span>` : ''}
+    function abrirListaCobradores() {
+        const lista = document.getElementById('lista-cobradores');
+        if (data.historialCobradores.length === 0) {
+            lista.innerHTML = '<p>No hay registros de cobradores</p>';
+        } else {
+            let html = '';
+            // Agrupar por cobrador y contar ventas
+            const resumen = {};
+            data.movimientos.forEach(m => {
+                if (!resumen[m.cobrador]) resumen[m.cobrador] = { ventas: 0, monto: 0 };
+                resumen[m.cobrador].ventas++;
+                if (!m.error) resumen[m.cobrador].monto += m.monto;
+            });
+            
+            [...data.historialCobradores].reverse().forEach(c => {
+                const fecha = new Date(c.timestamp).toLocaleString('es-AR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+                const stats = resumen[c.nombre] || { ventas: 0, monto: 0 };
+                html += `<div class="cobrador-item">
+                    <div>
+                        <strong>👤 ${c.nombre}</strong><br>
+                        <small>🕒 ${fecha}</small>
                     </div>
-                    ${!m.error ? `<button class="btn-small" onclick="abrirMarcarError(${m.id})">Marcar error</button>` : ''}
+                    <div style="text-align:right">
+                        <small>💰 $${stats.monto.toLocaleString('es-AR')}</small><br>
+                        <small>📦 ${stats.ventas} ventas</small>
+                    </div>
                 </div>`;
             });
             lista.innerHTML = html;
         }
+        document.getElementById('modal-cobradores').classList.add('active');
+    }
+    function cerrarModalCobradores() { document.getElementById('modal-cobradores').classList.remove('active'); }
+
+    function filtrarHistorial(tipo) {
+        filtroHistorialActual = tipo;
+        mostrarHistorial();
+    }
+    
+    function mostrarHistorial() {
+        const lista = document.getElementById('historial-lista');
+        let movimientosFiltrados = [...data.movimientos];
+        
+        if (filtroHistorialActual === 'efectivo') {
+            movimientosFiltrados = movimientosFiltrados.filter(m => m.tipo === 'efectivo');
+        } else if (filtroHistorialActual === 'transferencia') {
+            movimientosFiltrados = movimientosFiltrados.filter(m => m.tipo === 'transferencia');
+        } else if (filtroHistorialActual === 'cobradorActual') {
+            movimientosFiltrados = movimientosFiltrados.filter(m => m.cobrador === data.cobradorActual);
+        }
+        
+        if (movimientosFiltrados.length === 0) {
+            lista.innerHTML = '<p style="text-align:center;">Sin movimientos</p>';
+        } else {
+            let html = ''; 
+            movimientosFiltrados.reverse().forEach(m => {
+                const fecha = new Date(m.timestamp).toLocaleString('es-AR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+                html += `<div class="movimiento-item" style="${m.error ? 'opacity:0.6;' : ''}">
+                    <div class="movimiento-header">
+                        <span class="${m.tipo === 'efectivo' ? 'tipo-efectivo' : 'tipo-transferencia'}">${m.tipo === 'efectivo' ? '💵 Efectivo' : '📱 Transferencia'}</span>
+                        <span class="cobrador-tag">👤 ${m.cobrador}</span>
+                        ${m.error ? '<span class="error-tag">⚠️ Anulado</span>' : ''}
+                    </div>
+                    <div><strong>$${m.monto.toLocaleString('es-AR')}</strong> - ${m.descripcion}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+                        <small>${fecha}</small>
+                        ${!m.error ? `<button class="btn-small" onclick="abrirMarcarError(${m.id})">Marcar error</button>` : ''}
+                    </div>
+                    ${m.error && m.notaError ? `<div><small>📝 ${m.notaError}</small></div>` : ''}
+                </div>`;
+            });
+            lista.innerHTML = html;
+        }
+    }
+
+    function abrirHistorial() {
+        mostrarHistorial();
         document.getElementById('modal-historial').classList.add('active');
     }
     function cerrarModalHistorial() { document.getElementById('modal-historial').classList.remove('active'); }
-    function abrirMarcarError(id) { movimientoAError = id; const mov = data.movimientos.find(m => m.id === id); if(mov) document.getElementById('error-movimiento-info').textContent = `$${mov.monto.toLocaleString('es-AR')} · ${mov.descripcion}`; document.getElementById('modal-error').classList.add('active'); }
+    
+    function abrirMarcarError(id) { 
+        movimientoAError = id; 
+        const mov = data.movimientos.find(m => m.id === id); 
+        if(mov) document.getElementById('error-movimiento-info').textContent = `$${mov.monto.toLocaleString('es-AR')} · ${mov.descripcion} · ${mov.cobrador}`; 
+        document.getElementById('modal-error').classList.add('active'); 
+    }
     function cerrarModalError() { document.getElementById('modal-error').classList.remove('active'); movimientoAError = null; }
-    function confirmarMarcarError() { if(movimientoAError){ const mov = data.movimientos.find(m => m.id === movimientoAError); if(mov && !mov.error){ mov.error = true; mov.notaError = document.getElementById('input-nota-error').value.trim(); guardarData(); actualizarUI(); } } cerrarModalError(); abrirHistorial(); }
+    function confirmarMarcarError() { 
+        if(movimientoAError){ 
+            const mov = data.movimientos.find(m => m.id === movimientoAError); 
+            if(mov && !mov.error){ 
+                mov.error = true; 
+                mov.notaError = document.getElementById('input-nota-error').value.trim(); 
+                guardarData(); 
+                actualizarUI(); 
+            } 
+        } 
+        cerrarModalError(); 
+        mostrarHistorial();
+    }
     window.abrirMarcarError = abrirMarcarError;
 
     function abrirExportar() {
         let totalEf=0, totalTr=0, ops=0; 
         data.movimientos.forEach(m => { if(!m.error){ if(m.tipo==='efectivo') totalEf+=m.monto; else totalTr+=m.monto; ops++; } });
-        let texto = `═══════════════════════════════════\n   CIERRE DE CAJA - BUFFET TORNEO\n═══════════════════════════════════\n\n👤 COBRADOR: ${data.cobradorActual}\n📅 FECHA: ${new Date().toLocaleString('es-AR')}\n\n💵 EFECTIVO:      $${totalEf.toLocaleString('es-AR')}\n📱 TRANSFERENCIA: $${totalTr.toLocaleString('es-AR')}\n🧾 OPERACIONES:   ${ops}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💰 TOTAL GENERAL: $${(totalEf+totalTr).toLocaleString('es-AR')}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n📋 DETALLE DE MOVIMIENTOS:\n${data.movimientos.map(m => `${m.error ? '⚠️ [ANULADO]' : '✓'} ${m.tipo === 'efectivo' ? '💵' : '📱'} $${m.monto.toLocaleString('es-AR')} - ${m.descripcion} (${new Date(m.timestamp).toLocaleString('es-AR')}) - ${m.cobrador}${m.error && m.notaError ? ' - Nota: '+m.notaError : ''}`).join('\n')}`;
+        
+        let texto = `═══════════════════════════════════════════\n`;
+        texto += `   CIERRE DE CAJA - BUFFET MULTICOBRADOR\n`;
+        texto += `═══════════════════════════════════════════\n\n`;
+        texto += `📅 FECHA: ${new Date().toLocaleString('es-AR')}\n`;
+        texto += `👤 COBRADOR ACTUAL: ${data.cobradorActual}\n`;
+        texto += `🕒 INICIO TURNO: ${data.turnoInicio ? new Date(data.turnoInicio).toLocaleString('es-AR') : '—'}\n\n`;
+        texto += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+        texto += `📊 RESUMEN POR COBRADOR:\n`;
+        
+        const porCobrador = {};
+        data.movimientos.forEach(m => {
+            if (!m.error) {
+                if (!porCobrador[m.cobrador]) porCobrador[m.cobrador] = { efectivo: 0, transferencia: 0, total: 0, ops: 0 };
+                if (m.tipo === 'efectivo') porCobrador[m.cobrador].efectivo += m.monto;
+                else porCobrador[m.cobrador].transferencia += m.monto;
+                porCobrador[m.cobrador].total += m.monto;
+                porCobrador[m.cobrador].ops++;
+            }
+        });
+        
+        for (const [cob, vals] of Object.entries(porCobrador)) {
+            texto += `  👤 ${cob}: $${vals.total.toLocaleString('es-AR')} (${vals.ops} ventas)\n`;
+            texto += `     💵 Efectivo: $${vals.efectivo.toLocaleString('es-AR')}  📱 Transferencia: $${vals.transferencia.toLocaleString('es-AR')}\n`;
+        }
+        
+        texto += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+        texto += `💰 TOTAL GENERAL: $${(totalEf+totalTr).toLocaleString('es-AR')}\n`;
+        texto += `💵 EFECTIVO TOTAL: $${totalEf.toLocaleString('es-AR')}\n`;
+        texto += `📱 TRANSFERENCIA TOTAL: $${totalTr.toLocaleString('es-AR')}\n`;
+        texto += `🧾 OPERACIONES TOTALES: ${ops}\n`;
+        texto += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+        texto += `📋 DETALLE DE MOVIMIENTOS:\n`;
+        texto += data.movimientos.map(m => `${m.error ? '⚠️ [ANULADO]' : '✓'} ${m.tipo === 'efectivo' ? '💵' : '📱'} $${m.monto.toLocaleString('es-AR')} - ${m.descripcion} (${new Date(m.timestamp).toLocaleString('es-AR')}) - ${m.cobrador}${m.error && m.notaError ? ' - Nota: '+m.notaError : ''}`).join('\n');
+        
         document.getElementById('texto-exportar').value = texto; 
         document.getElementById('modal-exportar').classList.add('active');
         const guardado = localStorage.getItem('whatsappDestino'); 
         if(guardado) document.getElementById('whatsapp-destino').value = guardado;
     }
     function cerrarModalExportar() { document.getElementById('modal-exportar').classList.remove('active'); }
-    function copiarAlPortapapeles() { navigator.clipboard.writeText(document.getElementById('texto-exportar').value).then(()=>alert('✅ Copiado al portapapeles')); }
+    function copiarAlPortapapeles() { navigator.clipboard.writeText(document.getElementById('texto-exportar').value).then(()=>alert('✅ Copiado')); }
     function descargarExcel() {
         let csv = "ID,Tipo,Monto,Descripción,Cobrador,Fecha,Estado,NotaError\n"; 
         data.movimientos.forEach(m => { 
@@ -592,7 +778,7 @@
     }
     function enviarPorWhatsApp() { 
         let num = document.getElementById('whatsapp-destino').value.trim(); 
-        if(!num) return alert('📲 Ingresá un número de WhatsApp'); 
+        if(!num) return alert('📲 Ingresá un número'); 
         localStorage.setItem('whatsappDestino', num); 
         window.open(`https://wa.me/${num}?text=${encodeURIComponent(document.getElementById('texto-exportar').value)}`,'_blank'); 
     }
@@ -611,7 +797,10 @@
     window.cerrarModalCobrador = cerrarModalCobrador; 
     window.confirmarCambioCobrador = confirmarCambioCobrador;
     window.abrirHistorial = abrirHistorial; 
-    window.cerrarModalHistorial = cerrarModalHistorial; 
+    window.cerrarModalHistorial = cerrarModalHistorial;
+    window.abrirListaCobradores = abrirListaCobradores;
+    window.cerrarModalCobradores = cerrarModalCobradores;
+    window.filtrarHistorial = filtrarHistorial;
     window.abrirExportar = abrirExportar; 
     window.cerrarModalExportar = cerrarModalExportar;
     window.copiarAlPortapapeles = copiarAlPortapapeles; 
