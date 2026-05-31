@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Buffet – Torneo Gimnasia Artística</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#8b5cf6">
@@ -48,34 +48,26 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
-            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 12px;
             transition: background 0.3s, color 0.3s;
             -webkit-tap-highlight-color: transparent;
-            overflow: hidden;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            overflow-y: auto;
         }
         
         .app-container {
             width: 100%;
             max-width: 540px;
-            height: 100%;
             background: var(--card);
             border-radius: var(--radius-card);
-            padding: 18px 18px 16px;
+            padding: 16px 16px 20px;
             box-shadow: var(--shadow);
             transition: background 0.3s;
             display: flex;
             flex-direction: column;
-            gap: 0;
-            overflow: hidden;
+            gap: 10px;
         }
 
         .header {
@@ -84,8 +76,6 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 6px;
-            flex-shrink: 0;
-            margin-bottom: 10px;
         }
         
         .logo { font-weight: 800; font-size: 1.2rem; color: var(--primary); letter-spacing: -0.5px; display: flex; align-items: center; gap: 6px; }
@@ -102,8 +92,6 @@
             align-items: center;
             justify-content: space-between;
             gap: 10px;
-            flex-shrink: 0;
-            margin-bottom: 8px;
         }
         .dark-mode .cobrador-box { background: linear-gradient(135deg, #2e1065, #3b0764); }
         .cobrador-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--primary); }
@@ -118,23 +106,18 @@
             color: var(--subtext);
             font-weight: 500;
             padding: 4px 0;
-            flex-shrink: 0;
-            margin-bottom: 4px;
         }
 
-        /* BOTONES GRANDES - altura reducida 8% */
+        /* BOTONES GRANDES */
         .buttons-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 14px;
-            flex: 1.6;
-            min-height: 0;
-            margin-bottom: 10px;
         }
         .entry-btn {
             border: none;
             border-radius: var(--radius-btn);
-            padding: 0;
+            padding: 18px 8px;
             color: white;
             font-weight: 700;
             font-size: 16px;
@@ -147,8 +130,6 @@
             justify-content: center;
             gap: 6px;
             user-select: none;
-            min-height: 88px;
-            width: 100%;
         }
         .entry-btn:active { transform: scale(0.96); }
         .cash-btn { background: linear-gradient(135deg, var(--efectivo), var(--efectivo-dark)); }
@@ -162,12 +143,6 @@
             border: 1px solid var(--border);
             border-radius: 20px;
             padding: 10px 14px;
-            flex: 1;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            margin-bottom: 10px;
         }
         .stat-row {
             display: flex;
@@ -188,12 +163,11 @@
         }
         .stat-value { font-weight: 700; }
 
-        /* BOTONES DE ACCIÓN */
+        /* BOTONES DE ACCIÓN - AHORA MÁS ARRIBA */
         .action-buttons {
             display: flex;
             gap: 12px;
-            flex-shrink: 0;
-            margin-top: 0;
+            margin-top: 4px;
         }
         .btn {
             border: none;
@@ -212,20 +186,65 @@
         .btn-historial { background: #64748b; }
         .btn-exportar { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
 
-        /* MODALES */
+        /* MODALES - Calculadora sin teclado físico */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
         .modal.active { display: flex; }
         .modal-content { background: var(--card); border-radius: var(--radius-modal); padding: 20px; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; color: var(--text); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); }
         .modal-content h3 { margin-bottom: 14px; color: var(--primary); font-size: 18px; }
-        .modal-content input, .modal-content textarea { width: 100%; padding: 10px; border-radius: 10px; border: 2px solid var(--border); font-size: 15px; margin-bottom: 10px; background: var(--bg); color: var(--text); font-family: inherit; }
-        .calc-display { background: var(--stat-bg); border: 2px solid var(--border); border-radius: 16px; padding: 12px; font-size: 24px; font-weight: 700; text-align: right; min-height: 60px; margin-bottom: 10px; }
-        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
-        .calc-btn { background: var(--stat-bg); border: 2px solid var(--border); border-radius: 14px; padding: 12px 4px; font-size: 18px; font-weight: 700; cursor: pointer; text-align: center; }
-        .calc-btn:active { transform: scale(0.92); }
-        .calc-btn.operador { background: var(--primary); color: white; border-color: var(--primary); }
-        .calc-btn.igual { background: var(--success); color: white; }
+        
+        /* DESACTIVAMOS EL TECLADO DEL SISTEMA */
+        .modal-content input, .modal-content textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 2px solid var(--border);
+            font-size: 15px;
+            margin-bottom: 10px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: inherit;
+            pointer-events: none;
+            user-select: none;
+            background-color: var(--stat-bg);
+        }
+        
+        .calc-display {
+            background: var(--stat-bg);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 12px;
+            font-size: 28px;
+            font-weight: 800;
+            text-align: right;
+            min-height: 70px;
+            margin-bottom: 12px;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .calc-btn {
+            background: var(--stat-bg);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            padding: 14px 4px;
+            font-size: 22px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.1s;
+            user-select: none;
+        }
+        .calc-btn:active { transform: scale(0.94); background: var(--border); }
+        .calc-btn.operador { background: var(--primary); color: white; border-color: var(--primary); font-size: 28px; }
+        .calc-btn.igual { background: var(--success); color: white; font-size: 24px; }
         .calc-btn.borrar { background: var(--danger); color: white; }
-        .calc-btn.backspace { background: var(--warning); color: #1e293b; }
+        .calc-btn.backspace { background: var(--warning); color: #1e293b; font-size: 24px; }
+        
         .btn-confirm { background: var(--success); color: white; border: none; border-radius: 10px; padding: 12px; cursor: pointer; font-weight: 700; width: 100%; margin-top: 6px; }
         .btn-cancel { background: #94a3b8; color: white; border: none; border-radius: 10px; padding: 10px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 6px; }
         .btn-danger { background: var(--danger); color: white; }
@@ -235,6 +254,14 @@
         .tipo-transferencia { background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; }
         .pulse { animation: pulse 0.4s ease; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.06); color: var(--success); } 100% { transform: scale(1); } }
+        
+        /* Evitamos que aparezca el teclado en cualquier input numérico */
+        input, textarea {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -261,7 +288,7 @@
     <!-- ÚLTIMO REGISTRO -->
     <div class="last-entry" id="last-entry-text">Último registro: —</div>
 
-    <!-- BOTONES PRINCIPALES (ALTURA REDUCIDA 8%) -->
+    <!-- BOTONES PRINCIPALES -->
     <div class="buttons-grid">
         <button class="entry-btn cash-btn" onclick="abrirRegistro('efectivo')">
             <span class="icono">💵</span>
@@ -281,7 +308,7 @@
         <div class="stat-row total-row"><span>💰 TOTAL</span><span class="stat-value" id="total-general">$0</span></div>
     </div>
 
-    <!-- BOTONES INFERIORES (HISTORIAL Y CIERRE) -->
+    <!-- BOTONES INFERIORES (HISTORIAL Y CIERRE) - SUBIDOS -->
     <div class="action-buttons">
         <button class="btn btn-historial" onclick="abrirHistorial()">📋 Historial</button>
         <button class="btn btn-exportar" onclick="abrirExportar()">📥 Cierre</button>
@@ -289,12 +316,83 @@
 </div>
 
 <!-- MODALES -->
-<div class="modal" id="modal-registro"><div class="modal-content"><h3 id="modal-registro-titulo">💵 Calculadora</h3><div class="calc-display" id="calc-display">0</div><div class="calc-grid"><button class="calc-btn" onclick="agregarACalc('7')">7</button><button class="calc-btn" onclick="agregarACalc('8')">8</button><button class="calc-btn" onclick="agregarACalc('9')">9</button><button class="calc-btn backspace" onclick="borrarUltimo()">⌫</button><button class="calc-btn" onclick="agregarACalc('4')">4</button><button class="calc-btn" onclick="agregarACalc('5')">5</button><button class="calc-btn" onclick="agregarACalc('6')">6</button><button class="calc-btn operador" onclick="agregarACalc('+')">+</button><button class="calc-btn" onclick="agregarACalc('1')">1</button><button class="calc-btn" onclick="agregarACalc('2')">2</button><button class="calc-btn" onclick="agregarACalc('3')">3</button><button class="calc-btn operador" onclick="agregarACalc('-')">−</button><button class="calc-btn" onclick="agregarACalc('0')">0</button><button class="calc-btn" onclick="agregarACalc('.')">.</button><button class="calc-btn borrar" onclick="limpiarCalc()">C</button><button class="calc-btn operador" onclick="agregarACalc('*')">×</button><button class="calc-btn igual" onclick="calcularResultado()" style="grid-column: span 2;">=</button><button class="calc-btn operador" onclick="agregarACalc('/')" style="grid-column: span 2;">÷</button></div><input type="text" id="input-descripcion" placeholder="📝 Descripción (opcional)"><button id="btn-registrar-venta" class="btn-confirm" disabled onclick="registrarDesdeCalc()">✅ Registrar venta</button><button class="btn-cancel" onclick="cerrarModalRegistro()">Cancelar</button></div></div>
-<div class="modal" id="modal-cobrador"><div class="modal-content"><h3>🔄 Cambiar cobrador</h3><input type="text" id="input-nuevo-cobrador" placeholder="Nombre del nuevo cobrador"><button class="btn-confirm" onclick="confirmarCambioCobrador()">✅ Cambiar</button><button class="btn-cancel" onclick="cerrarModalCobrador()">Cancelar</button></div></div>
-<div class="modal" id="modal-historial"><div class="modal-content"><h3>📋 Historial</h3><div id="historial-lista"></div><button class="btn-cancel" onclick="cerrarModalHistorial()">Cerrar</button></div></div>
-<div class="modal" id="modal-exportar"><div class="modal-content"><h3>📥 Cierre de caja</h3><textarea id="texto-exportar" rows="12" readonly style="font-family:monospace;font-size:12px;"></textarea><button class="btn-confirm" onclick="copiarAlPortapapeles()">📋 Copiar</button><button class="btn-confirm" onclick="descargarExcel()" style="background:#f59e0b;">📥 Descargar Excel</button><input type="text" id="whatsapp-destino" placeholder="📲 WhatsApp destino (ej: 5491161234567)"><button id="btn-whatsapp" class="btn-confirm" onclick="enviarPorWhatsApp()" style="background:#25D366;">💬 Enviar WhatsApp</button><button class="btn-cancel" onclick="cerrarModalExportar()">Cerrar</button></div></div>
-<div class="modal" id="modal-ayuda"><div class="modal-content"><h3>📘 Ayuda</h3><p><strong>Uso:</strong> Cambiá cobrador, usá los botones grandes, registrá montos con calculadora. El historial permite marcar errores. El cierre de caja genera reporte.</p><button class="btn-confirm" onclick="cerrarModalAyuda()">Entendido</button></div></div>
-<div class="modal" id="modal-error"><div class="modal-content"><h3>⚠️ Marcar error</h3><p id="error-movimiento-info"></p><input type="text" id="input-nota-error" placeholder="Nota (opcional)"><button class="btn-danger" onclick="confirmarMarcarError()">Marcar error</button><button class="btn-cancel" onclick="cerrarModalError()">Cancelar</button></div></div>
+<div class="modal" id="modal-registro">
+    <div class="modal-content">
+        <h3 id="modal-registro-titulo">💵 Calculadora</h3>
+        <div class="calc-display" id="calc-display">0</div>
+        <div class="calc-grid">
+            <button class="calc-btn" onclick="agregarACalc('7')">7</button>
+            <button class="calc-btn" onclick="agregarACalc('8')">8</button>
+            <button class="calc-btn" onclick="agregarACalc('9')">9</button>
+            <button class="calc-btn backspace" onclick="borrarUltimo()">⌫</button>
+            <button class="calc-btn" onclick="agregarACalc('4')">4</button>
+            <button class="calc-btn" onclick="agregarACalc('5')">5</button>
+            <button class="calc-btn" onclick="agregarACalc('6')">6</button>
+            <button class="calc-btn operador" onclick="agregarACalc('+')">+</button>
+            <button class="calc-btn" onclick="agregarACalc('1')">1</button>
+            <button class="calc-btn" onclick="agregarACalc('2')">2</button>
+            <button class="calc-btn" onclick="agregarACalc('3')">3</button>
+            <button class="calc-btn operador" onclick="agregarACalc('-')">−</button>
+            <button class="calc-btn" onclick="agregarACalc('0')">0</button>
+            <button class="calc-btn" onclick="agregarACalc('.')">.</button>
+            <button class="calc-btn borrar" onclick="limpiarCalc()">C</button>
+            <button class="calc-btn operador" onclick="agregarACalc('*')">×</button>
+            <button class="calc-btn igual" onclick="calcularResultado()" style="grid-column: span 2;">=</button>
+            <button class="calc-btn operador" onclick="agregarACalc('/')" style="grid-column: span 2;">÷</button>
+        </div>
+        <input type="text" id="input-descripcion" placeholder="📝 Descripción (opcional)" readonly onfocus="this.blur()">
+        <button id="btn-registrar-venta" class="btn-confirm" disabled onclick="registrarDesdeCalc()">✅ Registrar venta</button>
+        <button class="btn-cancel" onclick="cerrarModalRegistro()">Cancelar</button>
+    </div>
+</div>
+
+<div class="modal" id="modal-cobrador">
+    <div class="modal-content">
+        <h3>🔄 Cambiar cobrador</h3>
+        <input type="text" id="input-nuevo-cobrador" placeholder="Nombre del nuevo cobrador" readonly onfocus="this.blur()">
+        <button class="btn-confirm" onclick="confirmarCambioCobrador()">✅ Cambiar</button>
+        <button class="btn-cancel" onclick="cerrarModalCobrador()">Cancelar</button>
+    </div>
+</div>
+
+<div class="modal" id="modal-historial">
+    <div class="modal-content">
+        <h3>📋 Historial</h3>
+        <div id="historial-lista" style="max-height:50vh;overflow-y:auto;"></div>
+        <button class="btn-cancel" onclick="cerrarModalHistorial()">Cerrar</button>
+    </div>
+</div>
+
+<div class="modal" id="modal-exportar">
+    <div class="modal-content">
+        <h3>📥 Cierre de caja</h3>
+        <textarea id="texto-exportar" rows="12" readonly style="font-family:monospace;font-size:12px;"></textarea>
+        <button class="btn-confirm" onclick="copiarAlPortapapeles()">📋 Copiar</button>
+        <button class="btn-confirm" onclick="descargarExcel()" style="background:#f59e0b;">📥 Descargar Excel</button>
+        <input type="text" id="whatsapp-destino" placeholder="📲 WhatsApp destino (ej: 5491161234567)" readonly onfocus="this.blur()">
+        <button id="btn-whatsapp" class="btn-confirm" onclick="enviarPorWhatsApp()" style="background:#25D366;">💬 Enviar WhatsApp</button>
+        <button class="btn-cancel" onclick="cerrarModalExportar()">Cerrar</button>
+    </div>
+</div>
+
+<div class="modal" id="modal-ayuda">
+    <div class="modal-content">
+        <h3>📘 Ayuda</h3>
+        <p><strong>Uso:</strong> Cambiá cobrador, usá los botones grandes, registrá montos con la calculadora táctil de la app. El historial permite marcar errores. El cierre de caja genera reporte.</p>
+        <p><strong>📱 Xiaomi Redmi Note 5 Pro:</strong> El teclado del sistema está desactivado. Usá solo los botones de la calculadora.</p>
+        <button class="btn-confirm" onclick="cerrarModalAyuda()">Entendido</button>
+    </div>
+</div>
+
+<div class="modal" id="modal-error">
+    <div class="modal-content">
+        <h3>⚠️ Marcar error</h3>
+        <p id="error-movimiento-info"></p>
+        <input type="text" id="input-nota-error" placeholder="Nota (opcional)" readonly onfocus="this.blur()">
+        <button class="btn-danger" onclick="confirmarMarcarError()">Marcar error</button>
+        <button class="btn-cancel" onclick="cerrarModalError()">Cancelar</button>
+    </div>
+</div>
 
 <script>
 (function() {
@@ -349,31 +447,91 @@
     function abrirRegistro(tipo) {
         tipoRegistroPendiente = tipo;
         document.getElementById('modal-registro-titulo').textContent = tipo === 'efectivo' ? '💵 Efectivo' : '📱 Transferencia';
-        limpiarCalc(); document.getElementById('input-descripcion').value = ''; document.getElementById('modal-registro').classList.add('active');
+        limpiarCalc(); 
+        document.getElementById('input-descripcion').value = ''; 
+        document.getElementById('modal-registro').classList.add('active');
         const btn = document.getElementById('btn-registrar-venta');
         btn.style.background = tipo === 'efectivo' ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #3b82f6, #2563eb)';
     }
     function cerrarModalRegistro() { document.getElementById('modal-registro').classList.remove('active'); tipoRegistroPendiente = null; limpiarCalc(); }
     function actualizarDisplay() {
-        const display = document.getElementById('calc-display'); const btn = document.getElementById('btn-registrar-venta');
-        if (calcExpression === '' && calcResult === null) { display.textContent = '0'; btn.disabled = true; }
-        else if (calcResult !== null) { display.textContent = calcResult.toLocaleString('es-AR'); btn.disabled = calcResult <= 0; }
-        else { display.textContent = calcExpression || '0'; const ultimo = calcExpression.slice(-1); btn.disabled = ['+','-','×','÷','*','/'].includes(ultimo) || calcExpression === ''; }
+        const display = document.getElementById('calc-display'); 
+        const btn = document.getElementById('btn-registrar-venta');
+        if (calcExpression === '' && calcResult === null) { 
+            display.textContent = '0'; 
+            btn.disabled = true; 
+        }
+        else if (calcResult !== null) { 
+            display.textContent = '$ ' + calcResult.toLocaleString('es-AR'); 
+            btn.disabled = calcResult <= 0; 
+        }
+        else { 
+            display.textContent = calcExpression || '0'; 
+            const ultimo = calcExpression.slice(-1); 
+            btn.disabled = ['+','-','×','÷','*','/'].includes(ultimo) || calcExpression === ''; 
+        }
     }
-    function agregarACalc(v) { if (calcResult !== null && !isNaN(v)) { calcExpression = v; calcResult = null; } else if (calcResult !== null && isNaN(v)) { calcExpression = calcResult.toString() + v; calcResult = null; } else { calcExpression += v; } actualizarDisplay(); }
-    function borrarUltimo() { if (calcResult !== null) { calcExpression = calcResult.toString(); calcResult = null; } calcExpression = calcExpression.slice(0, -1); actualizarDisplay(); }
+    function agregarACalc(v) { 
+        if (calcResult !== null && !isNaN(v)) { 
+            calcExpression = v; 
+            calcResult = null; 
+        } else if (calcResult !== null && isNaN(v)) { 
+            calcExpression = calcResult.toString() + v; 
+            calcResult = null; 
+        } else { 
+            calcExpression += v; 
+        } 
+        actualizarDisplay(); 
+    }
+    function borrarUltimo() { 
+        if (calcResult !== null) { 
+            calcExpression = calcResult.toString(); 
+            calcResult = null; 
+        } 
+        calcExpression = calcExpression.slice(0, -1); 
+        actualizarDisplay(); 
+    }
     function limpiarCalc() { calcExpression = ''; calcResult = null; actualizarDisplay(); }
     function calcularResultado() {
         if (!calcExpression && calcResult === null) return;
-        try { let expr = calcExpression.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-'); if (!/^[0-9+\-*/.() ]+$/.test(expr)) throw new Error(); const resultado = Function('"use strict"; return (' + expr + ')')(); if (isNaN(resultado) || !isFinite(resultado)) throw new Error(); calcResult = Math.round(resultado * 100) / 100; calcExpression = ''; actualizarDisplay(); } catch(e) { document.getElementById('calc-display').textContent = 'Error'; calcExpression = ''; calcResult = null; document.getElementById('btn-registrar-venta').disabled = true; }
+        try { 
+            let expr = calcExpression.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-'); 
+            if (!/^[0-9+\-*/.() ]+$/.test(expr)) throw new Error(); 
+            const resultado = Function('"use strict"; return (' + expr + ')')(); 
+            if (isNaN(resultado) || !isFinite(resultado)) throw new Error(); 
+            calcResult = Math.round(resultado * 100) / 100; 
+            calcExpression = ''; 
+            actualizarDisplay(); 
+        } catch(e) { 
+            document.getElementById('calc-display').textContent = 'Error'; 
+            calcExpression = ''; 
+            calcResult = null; 
+            document.getElementById('btn-registrar-venta').disabled = true; 
+        }
     }
     function registrarDesdeCalc() {
         const monto = calcResult !== null ? calcResult : (calcExpression.trim() && /^[0-9.]+$/.test(calcExpression) ? parseFloat(calcExpression) : null);
-        if (!monto || monto <= 0) { alert('Monto inválido. Usá = o ingresá número.'); return; }
+        if (!monto || monto <= 0) { 
+            alert('Monto inválido. Usá = o ingresá número válido.'); 
+            return; 
+        }
         const descripcion = document.getElementById('input-descripcion').value.trim();
-        idCounter++; data.movimientos.push({ id: idCounter, tipo: tipoRegistroPendiente, monto: monto, descripcion: descripcion || 'Venta sin detalle', cobrador: data.cobradorActual || 'Sin cobrador', timestamp: new Date().toISOString(), error: false, notaError: '' });
-        guardarData(); actualizarUI(); cerrarModalRegistro();
-        document.getElementById('total-general').classList.add('pulse'); setTimeout(() => document.getElementById('total-general').classList.remove('pulse'), 400);
+        idCounter++; 
+        data.movimientos.push({ 
+            id: idCounter, 
+            tipo: tipoRegistroPendiente, 
+            monto: monto, 
+            descripcion: descripcion || 'Venta sin detalle', 
+            cobrador: data.cobradorActual || 'Sin cobrador', 
+            timestamp: new Date().toISOString(), 
+            error: false, 
+            notaError: '' 
+        });
+        guardarData(); 
+        actualizarUI(); 
+        cerrarModalRegistro();
+        document.getElementById('total-general').classList.add('pulse'); 
+        setTimeout(() => document.getElementById('total-general').classList.remove('pulse'), 400);
         if (navigator.vibrate) navigator.vibrate(40);
     }
 
@@ -385,9 +543,19 @@
         const lista = document.getElementById('historial-lista');
         if (data.movimientos.length === 0) lista.innerHTML = '<p style="text-align:center;">Sin movimientos</p>';
         else {
-            let html = ''; [...data.movimientos].reverse().forEach(m => {
+            let html = ''; 
+            [...data.movimientos].reverse().forEach(m => {
                 const fecha = new Date(m.timestamp).toLocaleString('es-AR');
-                html += `<div class="movimiento-item"><span class="${m.tipo === 'efectivo' ? 'tipo-efectivo' : 'tipo-transferencia'}">${m.tipo === 'efectivo' ? '💵 Efectivo' : '📱 Transferencia'}</span><div><strong>$${m.monto.toLocaleString('es-AR')}</strong><br><small>${m.descripcion}</small><br><small>${fecha} · ${m.cobrador}</small>${m.error ? `<br><span style="color:red;">⚠️ Error: ${m.notaError || 'sin nota'}</span>` : ''}</div>${!m.error ? `<button class="btn-small" onclick="abrirMarcarError(${m.id})">Marcar error</button>` : ''}</div>`;
+                html += `<div class="movimiento-item">
+                    <span class="${m.tipo === 'efectivo' ? 'tipo-efectivo' : 'tipo-transferencia'}">${m.tipo === 'efectivo' ? '💵 Efectivo' : '📱 Transferencia'}</span>
+                    <div style="flex:1">
+                        <strong>$${m.monto.toLocaleString('es-AR')}</strong><br>
+                        <small>${m.descripcion}</small><br>
+                        <small>${fecha} · ${m.cobrador}</small>
+                        ${m.error ? `<br><span style="color:red;">⚠️ Error: ${m.notaError || 'sin nota'}</span>` : ''}
+                    </div>
+                    ${!m.error ? `<button class="btn-small" onclick="abrirMarcarError(${m.id})">Marcar error</button>` : ''}
+                </div>`;
             });
             lista.innerHTML = html;
         }
@@ -400,27 +568,62 @@
     window.abrirMarcarError = abrirMarcarError;
 
     function abrirExportar() {
-        let totalEf=0, totalTr=0, ops=0; data.movimientos.forEach(m => { if(!m.error){ if(m.tipo==='efectivo') totalEf+=m.monto; else totalTr+=m.monto; ops++; } });
-        let texto = `CIERRE CAJA BUFFET\nCobrador: ${data.cobradorActual}\nEfectivo: $${totalEf.toLocaleString('es-AR')}\nTransferencia: $${totalTr.toLocaleString('es-AR')}\nOperaciones: ${ops}\nTOTAL: $${(totalEf+totalTr).toLocaleString('es-AR')}\n\nDetalle:\n` + data.movimientos.map(m => `${m.error?'[ANULADO]':''} ${m.tipo} $${m.monto} - ${m.descripcion} (${new Date(m.timestamp).toLocaleString('es-AR')})`).join('\n');
-        document.getElementById('texto-exportar').value = texto; document.getElementById('modal-exportar').classList.add('active');
-        const guardado = localStorage.getItem('whatsappDestino'); if(guardado) document.getElementById('whatsapp-destino').value = guardado;
+        let totalEf=0, totalTr=0, ops=0; 
+        data.movimientos.forEach(m => { if(!m.error){ if(m.tipo==='efectivo') totalEf+=m.monto; else totalTr+=m.monto; ops++; } });
+        let texto = `═══════════════════════════════════\n   CIERRE DE CAJA - BUFFET TORNEO\n═══════════════════════════════════\n\n👤 COBRADOR: ${data.cobradorActual}\n📅 FECHA: ${new Date().toLocaleString('es-AR')}\n\n💵 EFECTIVO:      $${totalEf.toLocaleString('es-AR')}\n📱 TRANSFERENCIA: $${totalTr.toLocaleString('es-AR')}\n🧾 OPERACIONES:   ${ops}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💰 TOTAL GENERAL: $${(totalEf+totalTr).toLocaleString('es-AR')}\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n📋 DETALLE DE MOVIMIENTOS:\n${data.movimientos.map(m => `${m.error ? '⚠️ [ANULADO]' : '✓'} ${m.tipo === 'efectivo' ? '💵' : '📱'} $${m.monto.toLocaleString('es-AR')} - ${m.descripcion} (${new Date(m.timestamp).toLocaleString('es-AR')}) - ${m.cobrador}${m.error && m.notaError ? ' - Nota: '+m.notaError : ''}`).join('\n')}`;
+        document.getElementById('texto-exportar').value = texto; 
+        document.getElementById('modal-exportar').classList.add('active');
+        const guardado = localStorage.getItem('whatsappDestino'); 
+        if(guardado) document.getElementById('whatsapp-destino').value = guardado;
     }
     function cerrarModalExportar() { document.getElementById('modal-exportar').classList.remove('active'); }
-    function copiarAlPortapapeles() { navigator.clipboard.writeText(document.getElementById('texto-exportar').value).then(()=>alert('Copiado')); }
+    function copiarAlPortapapeles() { navigator.clipboard.writeText(document.getElementById('texto-exportar').value).then(()=>alert('✅ Copiado al portapapeles')); }
     function descargarExcel() {
-        let csv = "ID,Tipo,Monto,Descripción,Cobrador,Fecha,Estado\n"; data.movimientos.forEach(m => { csv += `${m.id},${m.tipo},${m.monto},"${m.descripcion}",${m.cobrador},${new Date(m.timestamp).toLocaleString('es-AR')},${m.error ? 'Anulado' : 'OK'}\n`; });
-        const blob = new Blob(["\uFEFF" + csv], {type: "text/csv;charset=utf-8;"}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `buffet_${new Date().toISOString().slice(0,10)}.csv`; a.click(); URL.revokeObjectURL(a.href);
+        let csv = "ID,Tipo,Monto,Descripción,Cobrador,Fecha,Estado,NotaError\n"; 
+        data.movimientos.forEach(m => { 
+            csv += `${m.id},${m.tipo},${m.monto},"${m.descripcion}",${m.cobrador},${new Date(m.timestamp).toLocaleString('es-AR')},${m.error ? 'Anulado' : 'OK'},${m.notaError || ''}\n`; 
+        });
+        const blob = new Blob(["\uFEFF" + csv], {type: "text/csv;charset=utf-8;"}); 
+        const a = document.createElement('a'); 
+        a.href = URL.createObjectURL(blob); 
+        a.download = `buffet_${new Date().toISOString().slice(0,10)}.csv`; 
+        a.click(); 
+        URL.revokeObjectURL(a.href);
     }
-    function enviarPorWhatsApp() { let num = document.getElementById('whatsapp-destino').value.trim(); if(!num) return alert('Ingresá número'); localStorage.setItem('whatsappDestino', num); window.open(`https://wa.me/${num}?text=${encodeURIComponent(document.getElementById('texto-exportar').value)}`,'_blank'); }
+    function enviarPorWhatsApp() { 
+        let num = document.getElementById('whatsapp-destino').value.trim(); 
+        if(!num) return alert('📲 Ingresá un número de WhatsApp'); 
+        localStorage.setItem('whatsappDestino', num); 
+        window.open(`https://wa.me/${num}?text=${encodeURIComponent(document.getElementById('texto-exportar').value)}`,'_blank'); 
+    }
     function showHelp() { document.getElementById('modal-ayuda').classList.add('active'); }
     function cerrarModalAyuda() { document.getElementById('modal-ayuda').classList.remove('active'); }
 
-    window.abrirRegistro = abrirRegistro; window.cerrarModalRegistro = cerrarModalRegistro; window.agregarACalc = agregarACalc; window.borrarUltimo = borrarUltimo; window.limpiarCalc = limpiarCalc; window.calcularResultado = calcularResultado; window.registrarDesdeCalc = registrarDesdeCalc;
-    window.abrirCambioCobrador = abrirCambioCobrador; window.cerrarModalCobrador = cerrarModalCobrador; window.confirmarCambioCobrador = confirmarCambioCobrador;
-    window.abrirHistorial = abrirHistorial; window.cerrarModalHistorial = cerrarModalHistorial; window.abrirExportar = abrirExportar; window.cerrarModalExportar = cerrarModalExportar;
-    window.copiarAlPortapapeles = copiarAlPortapapeles; window.descargarExcel = descargarExcel; window.enviarPorWhatsApp = enviarPorWhatsApp; window.showHelp = showHelp; window.cerrarModalAyuda = cerrarModalAyuda; window.cerrarModalError = cerrarModalError; window.confirmarMarcarError = confirmarMarcarError;
+    // Exponer funciones globales
+    window.abrirRegistro = abrirRegistro; 
+    window.cerrarModalRegistro = cerrarModalRegistro; 
+    window.agregarACalc = agregarACalc; 
+    window.borrarUltimo = borrarUltimo; 
+    window.limpiarCalc = limpiarCalc; 
+    window.calcularResultado = calcularResultado; 
+    window.registrarDesdeCalc = registrarDesdeCalc;
+    window.abrirCambioCobrador = abrirCambioCobrador; 
+    window.cerrarModalCobrador = cerrarModalCobrador; 
+    window.confirmarCambioCobrador = confirmarCambioCobrador;
+    window.abrirHistorial = abrirHistorial; 
+    window.cerrarModalHistorial = cerrarModalHistorial; 
+    window.abrirExportar = abrirExportar; 
+    window.cerrarModalExportar = cerrarModalExportar;
+    window.copiarAlPortapapeles = copiarAlPortapapeles; 
+    window.descargarExcel = descargarExcel; 
+    window.enviarPorWhatsApp = enviarPorWhatsApp; 
+    window.showHelp = showHelp; 
+    window.cerrarModalAyuda = cerrarModalAyuda; 
+    window.cerrarModalError = cerrarModalError; 
+    window.confirmarMarcarError = confirmarMarcarError;
 
-    cargarData(); actualizarUI();
+    cargarData(); 
+    actualizarUI();
 })();
 </script>
 </body>
