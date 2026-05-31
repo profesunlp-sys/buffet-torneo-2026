@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, height=device-height">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Buffet – Torneo Gimnasia Artística</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#8b5cf6">
@@ -47,6 +47,7 @@
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background: var(--bg);
             color: var(--text);
+            min-height: 100vh;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -55,52 +56,58 @@
             transition: background 0.3s, color 0.3s;
             -webkit-tap-highlight-color: transparent;
             overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
         
         .app-container {
             width: 100%;
             max-width: 540px;
             height: 100%;
-            max-height: 98vh;
             background: var(--card);
             border-radius: var(--radius-card);
-            padding: 16px 18px 18px;
+            padding: 20px 18px 18px;
             box-shadow: var(--shadow);
             transition: background 0.3s;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            gap: 10px;
+            gap: 0;
             overflow: hidden;
         }
 
-        /* Contenedor superior (50% aprox) */
-        .top-section {
-            flex: 1;
+        /* Distribución uniforme - cada sección ocupa su espacio justo */
+        .app-container > *:first-child { margin-top: 0; }
+        
+        .header {
             display: flex;
-            flex-direction: column;
             justify-content: space-between;
-            gap: 12px;
-            min-height: 0;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            flex-shrink: 0;
+            margin-bottom: 12px;
         }
-
-        /* Contenedor inferior (50% aprox) */
-        .bottom-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            gap: 12px;
-            min-height: 0;
-        }
-
-        .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; flex-shrink: 0; }
+        
         .logo { font-weight: 800; font-size: 1.2rem; color: var(--primary); letter-spacing: -0.5px; display: flex; align-items: center; gap: 6px; }
         .clock { font-size: 1rem; font-weight: 700; background: var(--stat-bg); padding: 4px 12px; border-radius: 30px; border: 1px solid var(--border); }
         .icon-btn { background: var(--stat-bg); border: 1px solid var(--border); border-radius: 50%; width: 36px; height: 36px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text); transition: transform 0.2s; user-select: none; }
         .icon-btn:active { transform: scale(0.92); }
 
-        .cobrador-box { background: linear-gradient(135deg, #ede9fe, #ddd6fe); border: 2px solid var(--primary); border-radius: 18px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-shrink: 0; }
+        .cobrador-box {
+            background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+            border: 2px solid var(--primary);
+            border-radius: 18px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-shrink: 0;
+            margin-bottom: 8px;
+        }
         .dark-mode .cobrador-box { background: linear-gradient(135deg, #2e1065, #3b0764); }
         .cobrador-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--primary); }
         .cobrador-nombre { font-size: 18px; font-weight: 800; color: #4c1d95; line-height: 1.2; }
@@ -108,29 +115,107 @@
         .btn-cambiar-cobrador { background: var(--primary); color: white; border: none; border-radius: 14px; padding: 6px 12px; font-weight: 700; font-size: 12px; cursor: pointer; white-space: nowrap; transition: transform 0.15s; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4); }
         .btn-cambiar-cobrador:active { transform: scale(0.94); }
 
-        .last-entry { text-align: center; font-size: 11px; color: var(--subtext); font-weight: 500; min-height: 18px; flex-shrink: 0; }
+        .last-entry {
+            text-align: center;
+            font-size: 11px;
+            color: var(--subtext);
+            font-weight: 500;
+            padding: 6px 0;
+            flex-shrink: 0;
+            margin-bottom: 4px;
+        }
 
-        .buttons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; flex-shrink: 0; }
-        .entry-btn { border: none; border-radius: var(--radius-btn); padding: 18px 8px; color: white; font-weight: 700; font-size: 16px; cursor: pointer; box-shadow: var(--btn-shadow); transition: all 0.15s ease; display: flex; flex-direction: column; align-items: center; gap: 6px; user-select: none; }
-        .entry-btn:active { transform: scale(0.94); }
+        /* BOTONES GRANDES - ocupan espacio proporcional */
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            flex: 2;
+            min-height: 0;
+            margin-bottom: 12px;
+        }
+        .entry-btn {
+            border: none;
+            border-radius: var(--radius-btn);
+            padding: 0;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: var(--btn-shadow);
+            transition: all 0.15s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            user-select: none;
+            min-height: 100px;
+            width: 100%;
+        }
+        .entry-btn:active { transform: scale(0.96); }
         .cash-btn { background: linear-gradient(135deg, var(--efectivo), var(--efectivo-dark)); }
         .transfer-btn { background: linear-gradient(135deg, var(--transferencia), var(--transferencia-dark)); }
-        .entry-btn .icono { font-size: 28px; }
-        .entry-btn .texto { font-size: 13px; opacity: 0.95; }
+        .entry-btn .icono { font-size: 32px; }
+        .entry-btn .texto { font-size: 14px; opacity: 0.95; font-weight: 600; }
 
-        .stats-card { background: var(--stat-bg); border: 1px solid var(--border); border-radius: 20px; padding: 12px; flex-shrink: 0; }
-        .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+        /* TARJETA DE ESTADÍSTICAS */
+        .stats-card {
+            background: var(--stat-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 12px 14px;
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
         .stat-row:last-child { border-bottom: none; }
-        .total-row { font-size: 18px; font-weight: 800; color: var(--success); border-top: 2px solid var(--border); padding-top: 8px; margin-top: 4px; }
+        .total-row {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--success);
+            border-top: 2px solid var(--border);
+            padding-top: 8px;
+            margin-top: 4px;
+        }
         .stat-value { font-weight: 700; }
 
-        .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; flex-shrink: 0; }
-        .btn { border: none; border-radius: 14px; padding: 10px 12px; font-weight: 700; font-size: 13px; cursor: pointer; color: white; transition: opacity 0.2s, transform 0.15s; flex: 1; text-align: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+        /* BOTONES DE ACCIÓN */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-shrink: 0;
+            margin-top: 0;
+        }
+        .btn {
+            border: none;
+            border-radius: 14px;
+            padding: 12px 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            color: white;
+            transition: opacity 0.2s, transform 0.15s;
+            flex: 1;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
         .btn:active { transform: scale(0.96); }
         .btn-historial { background: #64748b; }
         .btn-exportar { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
 
-        /* MODALES (sin cambios funcionales) */
+        /* MODALES (sin cambios) */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
         .modal.active { display: flex; }
         .modal-content { background: var(--card); border-radius: var(--radius-modal); padding: 20px; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; color: var(--text); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); }
@@ -157,54 +242,56 @@
 </head>
 <body>
 <div class="app-container">
-    <!-- MITAD SUPERIOR: header, cobrador, último registro y botones grandes -->
-    <div class="top-section">
-        <div class="header">
-            <span class="logo">🍰 Buffet Torneo</span>
-            <span class="clock" id="live-clock">--:--:--</span>
-            <div style="display:flex; gap:6px;">
-                <button class="icon-btn" onclick="toggleDark()" title="Modo oscuro">🌓</button>
-                <button class="icon-btn" onclick="showHelp()" title="Ayuda">❓</button>
-            </div>
-        </div>
-
-        <div class="cobrador-box">
-            <div>
-                <div class="cobrador-label">👤 Cobrador de turno</div>
-                <div class="cobrador-nombre" id="cobrador-actual-nombre">—</div>
-            </div>
-            <button class="btn-cambiar-cobrador" onclick="abrirCambioCobrador()">🔄 Cambiar</button>
-        </div>
-
-        <div class="last-entry" id="last-entry-text">Último registro: —</div>
-
-        <div class="buttons-grid">
-            <button class="entry-btn cash-btn" onclick="abrirRegistro('efectivo')">
-                <span class="icono">💵</span><span class="texto">Efectivo</span>
-            </button>
-            <button class="entry-btn transfer-btn" onclick="abrirRegistro('transferencia')">
-                <span class="icono">📱</span><span class="texto">Transferencia</span>
-            </button>
+    <!-- HEADER -->
+    <div class="header">
+        <span class="logo">🍰 Buffet Torneo</span>
+        <span class="clock" id="live-clock">--:--:--</span>
+        <div style="display:flex; gap:6px;">
+            <button class="icon-btn" onclick="toggleDark()" title="Modo oscuro">🌓</button>
+            <button class="icon-btn" onclick="showHelp()" title="Ayuda">❓</button>
         </div>
     </div>
 
-    <!-- MITAD INFERIOR: estadísticas y botones de acción -->
-    <div class="bottom-section">
-        <div class="stats-card">
-            <div class="stat-row"><span>💵 Efectivo</span><span class="stat-value" id="total-efectivo">$0</span></div>
-            <div class="stat-row"><span>📱 Transferencia</span><span class="stat-value" id="total-transferencia">$0</span></div>
-            <div class="stat-row"><span>🧾 Operaciones</span><span class="stat-value" id="cantidad-operaciones">0</span></div>
-            <div class="stat-row total-row"><span>💰 TOTAL</span><span class="stat-value" id="total-general">$0</span></div>
+    <!-- COBRADOR -->
+    <div class="cobrador-box">
+        <div>
+            <div class="cobrador-label">👤 COBRADOR</div>
+            <div class="cobrador-nombre" id="cobrador-actual-nombre">—</div>
         </div>
+        <button class="btn-cambiar-cobrador" onclick="abrirCambioCobrador()">🔄 Cambiar</button>
+    </div>
 
-        <div class="action-buttons">
-            <button class="btn btn-historial" onclick="abrirHistorial()">📋 Historial</button>
-            <button class="btn btn-exportar" onclick="abrirExportar()">📥 Cierre de caja</button>
-        </div>
+    <!-- ÚLTIMO REGISTRO -->
+    <div class="last-entry" id="last-entry-text">Último registro: —</div>
+
+    <!-- BOTONES PRINCIPALES (EFECTIVO + TRANSFERENCIA) -->
+    <div class="buttons-grid">
+        <button class="entry-btn cash-btn" onclick="abrirRegistro('efectivo')">
+            <span class="icono">💵</span>
+            <span class="texto">EFECTIVO</span>
+        </button>
+        <button class="entry-btn transfer-btn" onclick="abrirRegistro('transferencia')">
+            <span class="icono">📱</span>
+            <span class="texto">TRANSFERENCIA</span>
+        </button>
+    </div>
+
+    <!-- ESTADÍSTICAS -->
+    <div class="stats-card">
+        <div class="stat-row"><span>💵 Efectivo</span><span class="stat-value" id="total-efectivo">$0</span></div>
+        <div class="stat-row"><span>📱 Transferencia</span><span class="stat-value" id="total-transferencia">$0</span></div>
+        <div class="stat-row"><span>🧾 Operaciones</span><span class="stat-value" id="cantidad-operaciones">0</span></div>
+        <div class="stat-row total-row"><span>💰 TOTAL</span><span class="stat-value" id="total-general">$0</span></div>
+    </div>
+
+    <!-- BOTONES SECUNDARIOS -->
+    <div class="action-buttons">
+        <button class="btn btn-historial" onclick="abrirHistorial()">📋 Historial</button>
+        <button class="btn btn-exportar" onclick="abrirExportar()">📥 Cierre</button>
     </div>
 </div>
 
-<!-- MODALES (copiados funcionalmente iguales) -->
+<!-- MODALES -->
 <div class="modal" id="modal-registro"><div class="modal-content"><h3 id="modal-registro-titulo">💵 Calculadora</h3><div class="calc-display" id="calc-display">0</div><div class="calc-grid"><button class="calc-btn" onclick="agregarACalc('7')">7</button><button class="calc-btn" onclick="agregarACalc('8')">8</button><button class="calc-btn" onclick="agregarACalc('9')">9</button><button class="calc-btn backspace" onclick="borrarUltimo()">⌫</button><button class="calc-btn" onclick="agregarACalc('4')">4</button><button class="calc-btn" onclick="agregarACalc('5')">5</button><button class="calc-btn" onclick="agregarACalc('6')">6</button><button class="calc-btn operador" onclick="agregarACalc('+')">+</button><button class="calc-btn" onclick="agregarACalc('1')">1</button><button class="calc-btn" onclick="agregarACalc('2')">2</button><button class="calc-btn" onclick="agregarACalc('3')">3</button><button class="calc-btn operador" onclick="agregarACalc('-')">−</button><button class="calc-btn" onclick="agregarACalc('0')">0</button><button class="calc-btn" onclick="agregarACalc('.')">.</button><button class="calc-btn borrar" onclick="limpiarCalc()">C</button><button class="calc-btn operador" onclick="agregarACalc('*')">×</button><button class="calc-btn igual" onclick="calcularResultado()" style="grid-column: span 2;">=</button><button class="calc-btn operador" onclick="agregarACalc('/')" style="grid-column: span 2;">÷</button></div><input type="text" id="input-descripcion" placeholder="📝 Descripción (opcional)"><button id="btn-registrar-venta" class="btn-confirm" disabled onclick="registrarDesdeCalc()">✅ Registrar venta</button><button class="btn-cancel" onclick="cerrarModalRegistro()">Cancelar</button></div></div>
 <div class="modal" id="modal-cobrador"><div class="modal-content"><h3>🔄 Cambiar cobrador</h3><input type="text" id="input-nuevo-cobrador" placeholder="Nombre del nuevo cobrador"><button class="btn-confirm" onclick="confirmarCambioCobrador()">✅ Cambiar</button><button class="btn-cancel" onclick="cerrarModalCobrador()">Cancelar</button></div></div>
 <div class="modal" id="modal-historial"><div class="modal-content"><h3>📋 Historial</h3><div id="historial-lista"></div><button class="btn-cancel" onclick="cerrarModalHistorial()">Cerrar</button></div></div>
@@ -293,7 +380,7 @@
         if (navigator.vibrate) navigator.vibrate(40);
     }
 
-    function abrirCambioCobrador() { document.getElementById('modal-cobrador').classList.add('active'); }
+    function abrirCambioCobrador() { document.getElementById('input-nuevo-cobrador').value = ''; document.getElementById('modal-cobrador').classList.add('active'); }
     function cerrarModalCobrador() { document.getElementById('modal-cobrador').classList.remove('active'); }
     function confirmarCambioCobrador() { const nombre = document.getElementById('input-nuevo-cobrador').value.trim(); if (!nombre) return alert('Ingresá un nombre'); data.cobradorActual = nombre; data.historialCobradores.push({ nombre, timestamp: new Date().toISOString() }); guardarData(); actualizarUI(); cerrarModalCobrador(); }
 
